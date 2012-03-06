@@ -1,0 +1,24 @@
+{
+  "author":"Enrique Amodeo",
+  "name":"build",
+  "description":"Build system for the Todo List application",
+  "version":"0.0.1",
+  "homepage":"https://github.com/larrymyers/jasmine-reporters",
+  "maintainers":[
+    {
+      "name":"Enrique Amodeo",
+      "email":"eamodeorubio@gmail.com",
+      "web":"http://eamodeorubio.wordpress.com"
+    }
+  ],
+  "licenses":[
+    {
+      "type":"MIT",
+      "url":"http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "main":"./build.js",
+  "dependencies":{
+    "uglify-js":"1.2.5"
+  }
+}

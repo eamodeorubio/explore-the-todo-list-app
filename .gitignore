@@ -1,0 +1,7 @@
+notes.txt
+js/todo*.min.js
+todoTEST*.xml
+.idea/
+.project
+.classpath
+
