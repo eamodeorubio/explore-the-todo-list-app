@@ -79,41 +79,35 @@ Simply open in your browser either ``todo_with_knockout.html`` or ``todo_with_ze
 Proyect layout
 ==============
 
-project
-|
-|-- build/ The build scripts
-|-- css/ Simple CSS for the applications
-|-- img/ Some images (the ajax loader)
-|-- js/ The runtime code of the application
-|---|
-|---|-- libs/ Third party libs used in runtime (zepto, jQuery, knockout)
-|---|-- todo_with_ko.min.js Compacted minimified code resulting of the build process (You must build first)
-|---|-- todo_with_zepto_jquery.min.js Compacted minimified code resulting of the build process (You must build first)
-|-- src/ The source code for the application
-|---|
-|---|-- main/ The source code for the runtime
-|---|----|
-|---|----|-- common/ The source code of the core of the application, decoupled from the DOM/Presentation framework
+The project is structured in the following directories:
+
+* ```build/``` The build scripts
+* ```css/``` Simple CSS for the applications
+* ```img/``` Some images (the ajax loader)
+* ```js/``` The runtime code of the application
+    * ```libs/``` Third party libs used in runtime (zepto, jQuery, knockout)
+        * ```todo_with_ko.min.js``` Compacted minimified code resulting of the build process (You must build first)
+        * ```todo_with_zepto_jquery.min.js``` Compacted minimified code resulting of the build process (You must build first)
+* ```src/``` The source code for the application
+    * ```main/``` The source code for the runtime
+        * ```common/``` The source code of the core of the application, decoupled from the DOM/Presentation framework
 used. The unit tests cover this files, except store.js.
-|---|----|----|
-|---|----|----|-- utils.js Event & observable fields (whenever I do not have knockout)
-|---|----|----|-- model.js A Task & Tasks (task list) model. Decoupled of the specific persistence/storage mechanism
-|---|----|----|-- controller.js The high level application controller
-|---|----|----|-- widgets.js Reusable controllers/widgets. Decoupled from the specific presentation framework
-|---|----|----|-- store.js A simple in memory storage.
-|---|----|-- knockout/ The view models implemented with [Knockout.js](http://knockoutjs.com/)
-|---|----|-- zepto_jquery/ The view models implemented with [Zepto](http://zeptojs.com/)/[jQuery](http://docs.jquery.com/Downloading_jQuery)
-|---|-- tests/ The source code for the tests
-|---|----|
-|---|----|-- libs/ Third party libs used for testing (jasmine & Larry Myers' jasmine reporters)
-|---|----|-- utils/ Custom utils for testing
-|---|----|----|
-|---|----|----|-- custom-matchers.js Some custom matchers for jasmine
-|---|----|----|-- test-doubles.js A test double (mocks/spies/stubs) library for the application
-|---|----|-- unit/ Unit tests
-|---|----|----|
-|---|----|----|-- suite.html A page to run unit tests (if you do not want to run them from the command line)
-|---|----|----|-- *-tests.js A test suite
+            * ```utils.js``` Event & observable fields (whenever I do not have knockout)
+            * ```model.js``` A Task & Tasks (task list) model. Decoupled of the specific persistence/storage mechanism
+            * ```controller.js``` The high level application controller
+            * ```widgets.js``` Reusable controllers/widgets. Decoupled from the specific presentation framework
+            * ```store.js``` A simple in memory storage.
+        * ```knockout/``` The view models implemented with [Knockout.js](http://knockoutjs.com/)
+        * ```zepto_jquery/``` The view models implemented with [Zepto](http://zeptojs.com/)/[jQuery](http://docs.jquery
+.com/Downloading_jQuery)
+    * ```tests/``` The source code for the tests
+        * ```libs/``` Third party libs used for testing (jasmine & Larry Myers' jasmine reporters)
+        * ```utils/``` Custom utils for testing
+            * ```custom-matchers.js``` Some custom matchers for jasmine
+            * ```test-doubles.js``` A test double (mocks/spies/stubs) library for the application
+        * ```unit/``` Unit tests
+            * ```suite.html``` A page to run unit tests (if you do not want to run them from the command line)
+            * ```*-tests.js``` A test suite
 
 Not yet done (in the roadmap)
 =============================
