@@ -58,18 +58,12 @@ Build
 To build this project follow these steps:
 
 1. If not on your system, [install Node.js](http://nodejs.org/#download)
-2. If you have not yet NPM, don't wait and [install NPM](http://npmjs.org/)
-3.  Install the [uglify-js](https://github.com/mishoo/UglifyJS) package issuing the following command: ``npm install -g
-uglify-js``
-    Perhaps you need to do a sudo: ``sudo npm install -g uglify-js``
+2. Newer versions of [Node.js](http://nodejs.org/#download) have already installed NPM. But if you have not yet NPM, don't wait and [install NPM](http://npmjs.org/).
 3. Download this project to your computer
-4. Go to the root folder of the project with the command line
-5. Execute the following command ``node build``.
-
-The build system is a simple node package "ad hoc" for this project. It will run the unit test suite,
-if there is no errors will compact and minimify all the application libraries.
-
-If you like to skip the tests, you can run ``node build --skipTests``
+4. Install the [uglify-js](https://github.com/mishoo/UglifyJS) package issuing the following command: ``npm install
+uglify-js`` from the root of this project.
+5. [Install Jake](https://github.com/mde/jake) if you have not yet installed it.
+6. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
 
 Execute
 =======
@@ -81,7 +75,7 @@ Proyect layout
 
 The project is structured in the following directories:
 
-* ```build/``` The build scripts
+* ```Jakefile``` The Jake build file of the project
 * ```css/``` Simple CSS for the applications
 * ```img/``` Some images (the ajax loader)
 * ```js/``` The runtime code of the application
@@ -89,6 +83,9 @@ The project is structured in the following directories:
         * ```todo_with_ko.min.js``` Compacted minimified code resulting of the build process (You must build first)
         * ```todo_with_zepto_jquery.min.js``` Compacted minimified code resulting of the build process (You must build first)
 * ```src/``` The source code for the application
+    * ```build/``` Some build utilities used from the build file
+        * ``minimize.js`` Node module that exposes a function to compact and minimize several source files using uglify-js
+        * ``runtests.js`` Node module that exposes a function to run jasmine tests
     * ```main/``` The source code for the runtime
         * ```common/``` The source code of the core of the application, decoupled from the DOM/Presentation framework
 used. The unit tests cover this files, except store.js.

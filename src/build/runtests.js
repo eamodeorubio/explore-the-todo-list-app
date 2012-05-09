@@ -1,9 +1,5 @@
-/*
- * A simple script to run the test suite
- * Simply call 'node build.js' in the shell from the root directory of the project
- */
 var fs = require('fs')
-    , jasminens = require('../src/tests/libs/jasmine-1.1.0/jasmine.js');
+    , jasminens = require('../tests/libs/jasmine-1.1.0/jasmine.js');
 
 var CustomReporterWithCallback = function (callback, optIndenter) {
   optIndenter = optIndenter || '  ';
@@ -76,29 +72,11 @@ var executeTestSuite = function (name, suitePaths, reporter) {
   executeTestsInsideJasmineEnviroment(contents.join(';'), reporter)
 };
 
-exports.executeTests = function (callback) {
-  if(typeof callback !== 'function') {
-    callback = function () {
-      console.log("No callback supplied");
-    };
-  }
-  executeTestSuite('todo', [
-    'src/main/common/utils.js',
-    'src/main/common/model.js',
-    'src/main/common/controller.js',
-    'src/main/common/widgets.js',
-    'src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.console_reporter.js',
-    'src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js',
-    'src/tests/utils/custom-matchers.js',
-    'src/tests/utils/test-doubles.js',
-    'src/tests/unit/app-controller-tests.js',
-    'src/tests/unit/create-task-controller-tests.js',
-    'src/tests/unit/task-list-tests.js',
-    'src/tests/unit/task-tests.js',
-    'src/tests/unit/app-widget-tests.js',
-    'src/tests/unit/create-task-widget-tests.js',
-    'src/tests/unit/task-widget-tests.js',
-    'src/tests/unit/event-tests.js',
-    'src/tests/unit/field-tests.js'
-  ], new CustomReporterWithCallback(callback));
+module.exports=function (name, sourceFiles, callback) {
+    if(typeof callback !== 'function') {
+        callback = function () {
+            console.log("No callback supplied");
+        };
+    }
+    executeTestSuite(name, sourceFiles, new CustomReporterWithCallback(callback));
 };
