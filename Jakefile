@@ -1,8 +1,8 @@
-var compactFiles=require('./src/build/minimize')
-  , executeTestSuite=require('./src/build/runtests')
-  , analyze=require('./src/build/analyze')
-  , fs=require('fs')
-  , commonSources=[
+var compactFiles, analyze
+  , executeTestSuite = require('./src/build/runtests')
+  , exec = require('child_process').exec
+  , fs = require('fs')
+  , commonSources = [
       'src/main/common/utils.js',
       'src/main/common/model.js',
       'src/main/common/controller.js',
@@ -27,8 +27,48 @@ function completion(task) {
   };
 }
 
+function installModule(module, callback) {
+  var cmd='npm install '+module;
+  console.log("Installing locally the module "+module);
+  console.log(cmd);
+  var child=exec(cmd, function(err) {
+    callback(err);
+  });
+  child.stdout.on('data', console.log.bind(console));
+  child.stderr.on('data', console.error.bind(console));
+}
+
+function requireModule(module, callback) {
+  try {
+    if(fs.statSync('node_modules/'+module).isDirectory())
+      callback();
+    else
+      installModule(module, callback);
+  } catch(err) {
+    installModule(module, callback);
+  }
+}
+
+task('require-minimize', function() {
+  requireModule('uglify-js', function(err) {
+    if(err)
+      console.log('Error installing uglify-js: %s', err);
+    compactFiles=require('./src/build/minimize');
+    complete();
+  });
+}, {async:true});
+
+task('require-analyze', function() {
+  requireModule('jshint', function(err) {
+    if(err)
+      console.log('Error installing jshint: %s', err);
+    analyze=require('./src/build/analyze');
+    complete();
+  });
+}, {async:true});
+
 desc('Runs static code analysis on the sources. It uses JSHint.');
-task('code-analysis', function() {
+task('code-analysis', ['require-analyze'], function() {
   var start=new Date().getTime();
   var result=analyze(listOfSources(
       'src/main/zepto_jquery/viewmodels.js',
@@ -112,7 +152,8 @@ desc('Builds only the Knockout based production files of this project. Will not 
 file('js/todo_with_ko.min.js', listOfSources(
           'js',
           'src/main/knockout/viewmodels.js',
-          'src/main/knockout/main.js'
+          'src/main/knockout/main.js',
+          'require-minimize'
         ), function() {
   compactFiles(listOfSources(
     'src/main/knockout/viewmodels.js',
@@ -125,7 +166,8 @@ file('js/todo_with_zepto_jquery.min.js', listOfSources(
          'js',
          'src/main/zepto_jquery/zepto-api-fix.js',
          'src/main/zepto_jquery/viewmodels.js',
-         'src/main/zepto_jquery/main.js'
+         'src/main/zepto_jquery/main.js',
+         'require-minimize'
        ), function() {
   compactFiles(listOfSources(
     'src/main/zepto_jquery/zepto-api-fix.js',
@@ -138,7 +180,7 @@ desc('Builds all the production files of this project, but will not perform neit
 task('minimize', ['js/todo_with_zepto_jquery.min.js', 'js/todo_with_ko.min.js']);
 
 desc('Perform unit tests and code analysis. Tests are done first, and if they are all ok, then code analysis is run');
-task('qa', ['unit-tests'], function() {
+task('qa', ['unit-tests', 'require-analyze'], function() {
   var start=new Date().getTime();
   if(jake.Task['unit-tests'].passed) {
     var analyzeTask=jake.Task['code-analysis'];

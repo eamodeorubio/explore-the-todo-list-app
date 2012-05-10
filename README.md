@@ -60,10 +60,8 @@ To build this project follow these steps:
 1. If not on your system, [install Node.js](http://nodejs.org/#download)
 2. Newer versions of [Node.js](http://nodejs.org/#download) have already installed NPM. But if you have not yet NPM, don't wait and [install NPM](http://npmjs.org/).
 3. Download this project to your computer
-4. Install the [uglify-js](https://github.com/mishoo/UglifyJS) package issuing the following command: ``npm install
-uglify-js`` from the root of this project.
-5. [Install Jake](https://github.com/mde/jake) if you have not yet installed it.
-6. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
+4. [Install Jake](https://github.com/mde/jake) if you have not yet installed it.
+5. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
 
 By default the build process will perform unit testing, static code analysis using JSHint and compactation and mimification to build the production ready files.
 
