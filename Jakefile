@@ -1,5 +1,6 @@
 var compactFiles=require('./src/build/minimize')
   , executeTestSuite=require('./src/build/runtests')
+  , analyze=require('./src/build/analyze')
   , fs=require('fs')
   , commonSources=[
       'src/main/common/utils.js',
@@ -25,6 +26,45 @@ function completion(task) {
     complete();
   };
 }
+
+desc('Runs static code analysis on the sources. It uses JSHint.');
+task('code-analysis', function() {
+  var start=new Date().getTime();
+  var result=analyze(listOfSources(
+      'src/main/zepto_jquery/viewmodels.js',
+      'src/main/zepto_jquery/main.js',
+      'src/main/knockout/viewmodels.js',
+      'src/main/knockout/main.js',
+      'src/tests/utils/custom-matchers.js',
+      'src/tests/utils/test-doubles.js',
+      'src/tests/unit/app-controller-tests.js',
+      'src/tests/unit/create-task-controller-tests.js',
+      'src/tests/unit/task-list-tests.js',
+      'src/tests/unit/task-tests.js',
+      'src/tests/unit/app-widget-tests.js',
+      'src/tests/unit/create-task-widget-tests.js',
+      'src/tests/unit/task-widget-tests.js',
+      'src/tests/unit/event-tests.js',
+      'src/tests/unit/field-tests.js'
+  ), {
+      bitwise: true, eqeqeq: true, forin: true, immed: true, strict: false,
+      latedef: true, newcap: true, noarg: true, nonew: true, undef:true,
+      trailing: true,
+      laxcomma: true, validthis: true,
+      browser: true, jquery: true, node: true,
+      predef:[
+        'ko', 'todo', 'Zepto', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
+        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn'
+      ]
+  });
+  if(!result.passed) {
+    this.errorMsgs=result.errorMsgs;
+    this.errorMsgs.forEach(function(error) {
+      console.log(error);
+    });
+  }
+  console.log("Task '"+this.name+"' is completed ("+(((new Date()).getTime() - start) / 1000).toPrecision(3)+" seconds)");
+});
 
 desc('Runs the unit tests of the project');
 task('unit-tests', function() {
