@@ -62,7 +62,7 @@ task('clean', ['js'], function() {
   console.log("Task '"+this.name+"' is completed");
 });
 
-desc('Builds only the Knockout production files of this project. Will not run any tests');
+desc('Builds only the Knockout based production files of this project. Will not run any tests');
 file('js/todo_with_ko.min.js', listOfSources(
           'js',
           'src/main/knockout/viewmodels.js',
@@ -74,7 +74,7 @@ file('js/todo_with_ko.min.js', listOfSources(
   ), 'js/todo_with_ko.min.js', completion(this));
 }, {async:true});
 
-desc('Builds only the Zepto/jQuery production files of this project. Will not run any tests');
+desc('Builds only the Zepto/jQuery based production files of this project. Will not run any tests');
 file('js/todo_with_zepto_jquery.min.js', listOfSources(
          'js',
          'src/main/zepto_jquery/zepto-api-fix.js',
@@ -104,5 +104,5 @@ task('build', ['unit-tests'], function(arg) {
   }
 }, {async:true});
 
-desc("The default task is 'build'");
+desc("The default task points to 'build'");
 task('default', ['build']);
