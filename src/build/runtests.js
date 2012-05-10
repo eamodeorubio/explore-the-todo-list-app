@@ -1,4 +1,5 @@
 var fs = require('fs')
+    , vm=require('vm')
     , jasminens = require('../tests/libs/jasmine-1.1.0/jasmine.js');
 
 var CustomReporterWithCallback = function (callback, optIndenter) {
@@ -44,21 +45,16 @@ var CustomReporterWithCallback = function (callback, optIndenter) {
   };
 };
 
-var executeTestsInsideJasmineEnviroment = function (testCode, reporter) {
-  (function (jasmine, afterEach, beforeEach, expect, describe, it, xdescribe, xit, waits, waitsFor, runs, spyOn) {
-    eval(testCode);
-  }(jasminens.jasmine
-      , jasminens.afterEach
-      , jasminens.beforeEach
-      , jasminens.expect
-      , jasminens.describe
-      , jasminens.it
-      , jasminens.xdescribe
-      , jasminens.xit
-      , jasminens.waits
-      , jasminens.waitsFor
-      , jasminens.runs
-      , jasminens.spyOn));
+var executeTestsInsideJasmineEnviroment = function (name, testCode, reporter) {
+  var testGlobals={}, prop;
+  for(prop in jasminens)
+    if(Object.prototype.hasOwnProperty.call(jasminens, prop))
+      testGlobals[prop]=jasminens[prop];
+  for(prop in global)
+    if(Object.prototype.hasOwnProperty.call(global, prop))
+      testGlobals[prop]=global[prop];
+  testGlobals.reporter=reporter;
+  vm.runInNewContext(testCode, testGlobals, 'test-suite-'+name);
 };
 
 var executeTestSuite = function (name, suitePaths, reporter) {
@@ -69,7 +65,7 @@ var executeTestSuite = function (name, suitePaths, reporter) {
   contents.push('jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter("' + name + '"))');
   contents.push('jasmine.getEnv().addReporter(reporter)');
   contents.push('jasmine.getEnv().execute()');
-  executeTestsInsideJasmineEnviroment(contents.join(';'), reporter);
+  executeTestsInsideJasmineEnviroment(name, contents.join(';'), reporter);
 };
 
 module.exports=function (name, sourceFiles, callback) {
