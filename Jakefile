@@ -45,7 +45,11 @@ task('code-analysis', function() {
       'src/tests/unit/create-task-widget-tests.js',
       'src/tests/unit/task-widget-tests.js',
       'src/tests/unit/event-tests.js',
-      'src/tests/unit/field-tests.js'
+      'src/tests/unit/field-tests.js',
+      'src/build/analyze.js',
+      'src/build/minimize.js',
+      'src/build/runtests.js',
+      'Jakefile'
   ), {
       bitwise: true, eqeqeq: true, forin: true, immed: true, strict: false,
       latedef: true, newcap: true, noarg: true, nonew: true, undef:true,
@@ -54,7 +58,8 @@ task('code-analysis', function() {
       browser: true, jquery: true, node: true,
       predef:[
         'ko', 'todo', 'Zepto', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
-        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn'
+        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn',
+        'complete', 'desc', 'task', 'file', 'directory', 'jake'
       ]
   });
   if(!result.passed) {
