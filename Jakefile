@@ -107,7 +107,7 @@ task('clean', ['js'], function() {
   console.log("Task '"+this.name+"' is completed");
 });
 
-desc('Builds only the Knockout based production files of this project. Will not run any tests');
+desc('Builds only the Knockout based production files of this project. Will not run neither tests nor code analysis.');
 file('js/todo_with_ko.min.js', listOfSources(
           'js',
           'src/main/knockout/viewmodels.js',
@@ -119,7 +119,7 @@ file('js/todo_with_ko.min.js', listOfSources(
   ), 'js/todo_with_ko.min.js', completion(this));
 }, {async:true});
 
-desc('Builds only the Zepto/jQuery based production files of this project. Will not run any tests');
+desc('Builds only the Zepto/jQuery based production files of this project. Will not run neither tests nor code analysis.');
 file('js/todo_with_zepto_jquery.min.js', listOfSources(
          'js',
          'src/main/zepto_jquery/zepto-api-fix.js',
@@ -133,18 +133,33 @@ file('js/todo_with_zepto_jquery.min.js', listOfSources(
   ), 'js/todo_with_zepto_jquery.min.js', completion(this));
 }, {async:true});
 
-desc('Builds all the production files of this project without running any tests.');
+desc('Builds all the production files of this project, but will not perform neither tests nor code analysis.');
 task('minimize', ['js/todo_with_zepto_jquery.min.js', 'js/todo_with_ko.min.js']);
 
-desc('Runs unit tests, and if all of them are ok, then will build the production files of this project');
-task('build', ['unit-tests'], function(arg) {
-  var buildCompleted=completion(this);
+desc('Perform unit tests and code analysis. Tests are done first, and if they are all ok, then code analysis is run');
+task('qa', ['unit-tests'], function() {
+  var start=new Date().getTime();
   if(jake.Task['unit-tests'].passed) {
+    var analyzeTask=jake.Task['code-analysis'];
+    analyzeTask.invoke();
+    this.passed=analyzeTask.passed;
+    this.errorMsgs=analyzeTask.errorMsgs;
+  } else {
+    console.log('TESTS FAILED! Code analysis will not be performed');
+    this.passed=false;
+  }
+  console.log("Task '"+this.name+"' is completed ("+(((new Date()).getTime() - start) / 1000).toPrecision(3)+" seconds)");
+});
+
+desc('Runs unit tests, and if all of them are ok, then will build the production files of this project');
+task('build', ['qa'], function() {
+  var buildCompleted=completion(this);
+  if(jake.Task['qa'].passed) {
     var minimizeTask=jake.Task['minimize'];
     minimizeTask.on('complete', buildCompleted);
     minimizeTask.invoke();
   } else {
-    console.log('TESTS FAILED! Compactation and minimification will not be performed');
+    console.log('QA FAILED! Compactation and minimification will not be performed');
     buildCompleted();
   }
 }, {async:true});
