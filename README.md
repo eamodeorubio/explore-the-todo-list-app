@@ -65,6 +65,8 @@ uglify-js`` from the root of this project.
 5. [Install Jake](https://github.com/mde/jake) if you have not yet installed it.
 6. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
 
+By default the build process will perform unit testing, static code analysis using JSHint and compactation and mimification to build the production ready files.
+
 Execute
 =======
 
@@ -86,6 +88,7 @@ The project is structured in the following directories:
     * ```build/``` Some build utilities used from the build file
         * ``minimize.js`` Node module that exposes a function to compact and minimize several source files using uglify-js
         * ``runtests.js`` Node module that exposes a function to run jasmine tests
+        * ``analyze.js`` Node module that wraps JSHint to perform static code analysis
     * ```main/``` The source code for the runtime
         * ```common/``` The source code of the core of the application, decoupled from the DOM/Presentation framework
 used. The unit tests cover this files, except store.js.
