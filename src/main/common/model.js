@@ -55,8 +55,8 @@ var todo = (function (ns, undefined) {
         id = dto.id;
         callback(self);
       });
-    }
+    };
   };
 
   return ns;
-})(todo);
+}(todo));

@@ -24,7 +24,7 @@ describe("A CreateTaskWidget, initialized with a task description text field, an
         descriptionTxtField.text.andReturn(newTaskDescriptionText);
 
         callback();
-      })
+      });
       it("the task description text will be cleared", function () {
         expect(descriptionTxtField.text).toHaveBeenCalledWith('');
       });

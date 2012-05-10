@@ -127,7 +127,7 @@ var test = (function (ns) {
     }
     r.toString = function () {
       return "test double <" + name + ">";
-    }
+    };
     return r;
   };
   ns.doubleFor = function (objectType, optName) {
@@ -137,4 +137,4 @@ var test = (function (ns) {
     return doubleFactory(optName || objectType);
   };
   return ns;
-})(test);
+}(test));

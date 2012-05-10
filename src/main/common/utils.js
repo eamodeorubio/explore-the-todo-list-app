@@ -6,9 +6,9 @@ var todo = (function (ns, undefined) {
     var subscriptors = [];
 
     this.subscribe = function (subscriptor) {
-      if(typeof subscriptor != 'function')
+      if(typeof subscriptor !== 'function')
         return;
-      if(subscriptors.indexOf(subscriptor) == -1)
+      if(subscriptors.indexOf(subscriptor) === -1)
         subscriptors.push(subscriptor);
     };
     this.publish = function (data) {
@@ -43,4 +43,4 @@ var todo = (function (ns, undefined) {
     return fieldAccessor;
   };
   return ns;
-})(todo);
+}(todo));

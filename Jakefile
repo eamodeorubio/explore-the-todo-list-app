@@ -154,8 +154,8 @@ task('qa', ['unit-tests'], function() {
 desc('Runs unit tests, and if all of them are ok, then will build the production files of this project');
 task('build', ['qa'], function() {
   var buildCompleted=completion(this);
-  if(jake.Task['qa'].passed) {
-    var minimizeTask=jake.Task['minimize'];
+  if(jake.Task.qa.passed) {
+    var minimizeTask=jake.Task.minimize;
     minimizeTask.on('complete', buildCompleted);
     minimizeTask.invoke();
   } else {

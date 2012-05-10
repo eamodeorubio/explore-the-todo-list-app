@@ -139,8 +139,8 @@ var todo = (function (ns, $, undefined) {
     this.addTaskBtn = new ns.view.$.ButtonViewModel($elementsMap.addTaskBtn, false);
     var tasksList = new ns.view.$.TasksListViewModel($elementsMap.tasksList, '');
 
-    this.newViewForTask = tasksList.newViewForTask.bind(tasksList)
+    this.newViewForTask = tasksList.newViewForTask.bind(tasksList);
     this.attachToDOM = tasksList.activate.bind(tasksList);
   };
   return ns;
-})(todo, window['Zepto'] || window['jQuery']);
+}(todo, window.Zepto || window.jQuery));

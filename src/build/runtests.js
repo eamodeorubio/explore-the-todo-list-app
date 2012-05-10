@@ -47,7 +47,7 @@ var CustomReporterWithCallback = function (callback, optIndenter) {
 var executeTestsInsideJasmineEnviroment = function (testCode, reporter) {
   (function (jasmine, afterEach, beforeEach, expect, describe, it, xdescribe, xit, waits, waitsFor, runs, spyOn) {
     eval(testCode);
-  })(jasminens.jasmine
+  }(jasminens.jasmine
       , jasminens.afterEach
       , jasminens.beforeEach
       , jasminens.expect
@@ -58,7 +58,7 @@ var executeTestsInsideJasmineEnviroment = function (testCode, reporter) {
       , jasminens.waits
       , jasminens.waitsFor
       , jasminens.runs
-      , jasminens.spyOn);
+      , jasminens.spyOn));
 };
 
 var executeTestSuite = function (name, suitePaths, reporter) {
@@ -69,7 +69,7 @@ var executeTestSuite = function (name, suitePaths, reporter) {
   contents.push('jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter("' + name + '"))');
   contents.push('jasmine.getEnv().addReporter(reporter)');
   contents.push('jasmine.getEnv().execute()');
-  executeTestsInsideJasmineEnviroment(contents.join(';'), reporter)
+  executeTestsInsideJasmineEnviroment(contents.join(';'), reporter);
 };
 
 module.exports=function (name, sourceFiles, callback) {
