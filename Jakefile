@@ -62,6 +62,7 @@ task('code-analysis', function() {
         'complete', 'desc', 'task', 'file', 'directory', 'jake'
       ]
   });
+  this.passed=result.passed;
   if(!result.passed) {
     this.errorMsgs=result.errorMsgs;
     this.errorMsgs.forEach(function(error) {
