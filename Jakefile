@@ -103,80 +103,150 @@ task('require-analyze', function () {
   });
 }, {async:true});
 
+var codeAnalyzer = function (sourceFiles, jsHintConfig) {
+  return function (errorMsgs) {
+    var result = analyze(sourceFiles, jsHintConfig);
+    if (errorMsgs)
+      Array.prototype.push.apply(errorMsgs, result.errorMsgs);
+    return result.passed;
+  };
+};
+
+var coreLogic = function () {
+  var sourceFiles = commonSourceFiles();
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:false, jquery:false,
+      predef:['todo', 'setTimeout', 'console']
+    })
+  };
+};
+
+var zeptoJQueryViewModels = function () {
+  var sourceFiles = [
+    'src/main/zepto_jquery/viewmodels.js',
+    'src/main/zepto_jquery/main.js'
+  ];
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:true, node:false, jquery:true,
+      predef:['todo']
+    })
+  };
+};
+
+var zeptoApiFix = function () {
+  var sourceFiles = ['src/main/zepto_jquery/zepto-api-fix.js'];
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:false, browser:true, node:false, jquery:true,
+      predef:['Zepto']
+    })
+  };
+};
+
+var unitTestSystem = function () {
+  var sourceFiles = [];
+  collectSourceFilesInDir(sourceFiles, 'src/tests/utils');
+  collectSourceFilesInDir(sourceFiles, 'src/tests/unit');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:false, jquery:false,
+      predef:['todo', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
+        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn']
+    })
+  };
+};
+
+var buildSystem = function () {
+  var sourceFiles = ['Jakefile'];
+  collectSourceFilesInDir(sourceFiles, 'src/build');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:true, jquery:false,
+      predef:['complete', 'desc', 'task', 'file', 'directory', 'jake']
+    })
+  };
+};
+
+var koViewModels = function () {
+  var sourceFiles = [];
+  collectSourceFilesInDir(sourceFiles, 'src/main/knockout');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:true, node:false, jquery:false,
+      predef:['todo', 'ko']
+    })
+  };
+};
+
+var project = {
+  coreLogic:coreLogic(),
+  zeptoJQuery:{
+    viewModels:zeptoJQueryViewModels(),
+    apiFix:zeptoApiFix()
+  },
+  ko:{
+    viewModels:koViewModels()
+  },
+  unitTestSystem:unitTestSystem(),
+  buildSystem:buildSystem(),
+  codeAnalysis:function (errorMsgs) {
+    console.log('Analyzing code of the application core logic.');
+    var coreOk = project.coreLogic.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Zepto/jQuery view models.');
+    var zeptoOk = project.zeptoJQuery.viewModels.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Zepto API fix.');
+    var apiFixOk = project.zeptoJQuery.apiFix.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Knockout view models.');
+    var koOk = project.ko.viewModels.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the unit tests.');
+    var testsOk = project.unitTestSystem.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the build system.');
+    var buildOk = project.buildSystem.codeAnalysis(errorMsgs);
+
+    return coreOk && zeptoOk && apiFixOk && koOk && testsOk && buildOk;
+  }
+};
+
 desc('Runs static code analysis on the sources. It uses JSHint.');
 task('code-analysis', ['require-analyze'], function () {
-  var start = new Date().getTime(), result, jshintConfig = {
-    bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-    latedef:true, nonew:true, noarg:true, undef:true,
-    trailing:true,
-    laxcomma:true, validthis:true
-  };
+  var start = new Date().getTime();
   this.errorMsgs = [];
-  this.passed = true;
-  // Analyze common libs
-  console.log('Analyzing code of the application core logic.');
-  jshintConfig.nonew=true;
-  jshintConfig.browser = false;
-  jshintConfig.node = false;
-  jshintConfig.jquery = false;
-  jshintConfig.predef = ['todo', 'setTimeout', 'console'];
-  result = analyze(commonSourceFiles(), jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-  // Analyze Zepto/jQuery libs
-  console.log('Analyzing code of the Zepto/jQuery view models.');
-  jshintConfig.browser = true;
-  jshintConfig.jquery = true;
-  jshintConfig.predef = ['todo'];
-  result = analyze(['src/main/zepto_jquery/viewmodels.js',
-    'src/main/zepto_jquery/main.js'], jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-  // Analyze Zepto api fix
-  console.log('Analyzing code of the Zepto API fix.');
-  jshintConfig.browser = true;
-  jshintConfig.jquery = true;
-  jshintConfig.newcap = false;
-  jshintConfig.predef = ['Zepto'];
-  result = analyze(['src/main/zepto_jquery/zepto-api-fix.js'], jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-  // Analyze KO libs
-  console.log('Analyzing code of the Knockout view models.');
-  jshintConfig.browser = true;
-  jshintConfig.newcap = true;
-  jshintConfig.jquery = false;
-  jshintConfig.predef = ['todo', 'ko'];
-  result = analyze(['src/main/knockout/viewmodels.js',
-    'src/main/knockout/main.js'], jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-  // Analyze tests
-  console.log('Analyzing code of the unit tests.');
-  jshintConfig.browser = false;
-  jshintConfig.jquery = false;
-  jshintConfig.predef = ['todo', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
-    'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn'];
-  var testLibs = [];
-  collectSourceFilesInDir(testLibs, 'src/tests/utils');
-  collectSourceFilesInDir(testLibs, 'src/tests/unit');
-  result = analyze(testLibs, jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-  // Analyze build system
-  console.log('Analyzing code of the build system.');
-  jshintConfig.node = true;
-  jshintConfig.predef = ['complete', 'desc', 'task', 'file', 'directory', 'jake'];
-  var buildLibs = ['Jakefile'];
-  collectSourceFilesInDir(buildLibs, 'src/build');
-  result = analyze(buildLibs, jshintConfig);
-  this.passed = this.passed && result.passed;
-  this.errorMsgs = this.errorMsgs.concat(result.errorMsgs);
-
+  this.passed = project.codeAnalysis(this.errorMsgs);
   this.errorMsgs.forEach(function (error) {
     console.log(error);
   });
-
   console.log("Task '" + this.name + "' is completed (" + (((new Date()).getTime() - start) / 1000).toPrecision(3) + " seconds)");
 });
 
