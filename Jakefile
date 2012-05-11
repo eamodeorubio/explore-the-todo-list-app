@@ -14,23 +14,158 @@ function collectSourceFilesInDir(sources, dirPath) {
   });
 }
 
-function commonSourceFiles() {
-  var sources = [];
-  collectSourceFilesInDir(sources, 'src/main/common');
-  return sources;
-}
+var codeAnalyzer = function (sourceFiles, jsHintConfig) {
+  return function (errorMsgs) {
+    var result = analyze(sourceFiles, jsHintConfig);
+    if (errorMsgs)
+      Array.prototype.push.apply(errorMsgs, result.errorMsgs);
+    return result.passed;
+  };
+};
 
-function allSourceFiles() {
-  var sources = ['Jakefile'];
-  collectSourceFilesInDir(sources, 'src/main');
-  collectSourceFilesInDir(sources, 'src/build');
-  collectSourceFilesInDir(sources, 'src/tests/unit');
-  collectSourceFilesInDir(sources, 'src/tests/utils');
-  return sources;
-}
+var coreLogic = function () {
+  var sourceFiles = [];
+  collectSourceFilesInDir(sourceFiles, 'src/main/common');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:false, jquery:false,
+      predef:['todo', 'setTimeout', 'console']
+    }),
+    sources:function () {
+      return sourceFiles.slice(0);
+    }
+  };
+};
+
+var zeptoJQueryViewModels = function () {
+  var sourceFiles = [
+    'src/main/zepto_jquery/viewmodels.js',
+    'src/main/zepto_jquery/main.js'
+  ];
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:true, node:false, jquery:true,
+      predef:['todo']
+    })
+  };
+};
+
+var zeptoApiFix = function () {
+  var sourceFiles = ['src/main/zepto_jquery/zepto-api-fix.js'];
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:false, browser:true, node:false, jquery:true,
+      predef:['Zepto']
+    })
+  };
+};
+
+var unitTestSystem = function () {
+  var sourceFiles = [];
+  collectSourceFilesInDir(sourceFiles, 'src/tests/utils');
+  collectSourceFilesInDir(sourceFiles, 'src/tests/unit');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:false, jquery:false,
+      predef:['todo', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
+        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn']
+    }),
+    execute:function (moduleToTest, callback) {
+      var sources = moduleToTest.sources();
+      sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.console_reporter.js');
+      sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
+      Array.prototype.push.apply(sources, sourceFiles);
+      executeTestSuite('todo', sources, callback);
+    }
+  };
+};
+
+var buildSystem = function () {
+  var sourceFiles = ['Jakefile'];
+  collectSourceFilesInDir(sourceFiles, 'src/build');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:false, node:true, jquery:false,
+      predef:['complete', 'desc', 'task', 'file', 'directory', 'jake']
+    })
+  };
+};
+
+var koViewModels = function () {
+  var sourceFiles = [];
+  collectSourceFilesInDir(sourceFiles, 'src/main/knockout');
+
+  return {
+    codeAnalysis:codeAnalyzer(sourceFiles, {
+      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
+      latedef:true, nonew:true, noarg:true, undef:true,
+      trailing:true, laxcomma:true, validthis:true,
+
+      newcap:true, browser:true, node:false, jquery:false,
+      predef:['todo', 'ko']
+    })
+  };
+};
+
+var project = {
+  coreLogic:coreLogic(),
+  zeptoJQuery:{
+    viewModels:zeptoJQueryViewModels(),
+    apiFix:zeptoApiFix()
+  },
+  ko:{
+    viewModels:koViewModels()
+  },
+  unitTestSystem:unitTestSystem(),
+  buildSystem:buildSystem(),
+  codeAnalysis:function (errorMsgs) {
+    console.log('Analyzing code of the application core logic.');
+    var coreOk = this.coreLogic.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Zepto/jQuery view models.');
+    var zeptoOk = this.zeptoJQuery.viewModels.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Zepto API fix.');
+    var apiFixOk = this.zeptoJQuery.apiFix.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the Knockout view models.');
+    var koOk = this.ko.viewModels.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the unit tests.');
+    var testsOk = this.unitTestSystem.codeAnalysis(errorMsgs);
+    console.log('Analyzing code of the build system.');
+    var buildOk = this.buildSystem.codeAnalysis(errorMsgs);
+
+    return coreOk && zeptoOk && apiFixOk && koOk && testsOk && buildOk;
+  },
+  executeUnitTests:function (callback) {
+    this.unitTestSystem.execute(this.coreLogic, callback);
+  }
+};
 
 function zeptoJQuerySourceFiles() {
-  var sources = commonSourceFiles();
+  var sources = project.coreLogic.sources();
   // Must be this order
   sources.push('src/main/zepto_jquery/zepto-api-fix.js');
   sources.push('src/main/zepto_jquery/viewmodels.js');
@@ -39,7 +174,7 @@ function zeptoJQuerySourceFiles() {
 }
 
 function koSourceFiles() {
-  var sources = commonSourceFiles();
+  var sources = project.coreLogic.sources();
   // Must be this order
   sources.push('src/main/knockout/viewmodels.js');
   sources.push('src/main/knockout/main.js');
@@ -47,7 +182,7 @@ function koSourceFiles() {
 }
 
 function unitTestSourceFiles() {
-  var sources = commonSourceFiles();
+  var sources = project.coreLogic.sources();
   sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.console_reporter.js');
   sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
   collectSourceFilesInDir(sources, 'src/tests/utils');
@@ -103,141 +238,6 @@ task('require-analyze', function () {
   });
 }, {async:true});
 
-var codeAnalyzer = function (sourceFiles, jsHintConfig) {
-  return function (errorMsgs) {
-    var result = analyze(sourceFiles, jsHintConfig);
-    if (errorMsgs)
-      Array.prototype.push.apply(errorMsgs, result.errorMsgs);
-    return result.passed;
-  };
-};
-
-var coreLogic = function () {
-  var sourceFiles = commonSourceFiles();
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:true, browser:false, node:false, jquery:false,
-      predef:['todo', 'setTimeout', 'console']
-    })
-  };
-};
-
-var zeptoJQueryViewModels = function () {
-  var sourceFiles = [
-    'src/main/zepto_jquery/viewmodels.js',
-    'src/main/zepto_jquery/main.js'
-  ];
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:true, browser:true, node:false, jquery:true,
-      predef:['todo']
-    })
-  };
-};
-
-var zeptoApiFix = function () {
-  var sourceFiles = ['src/main/zepto_jquery/zepto-api-fix.js'];
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:false, browser:true, node:false, jquery:true,
-      predef:['Zepto']
-    })
-  };
-};
-
-var unitTestSystem = function () {
-  var sourceFiles = [];
-  collectSourceFilesInDir(sourceFiles, 'src/tests/utils');
-  collectSourceFilesInDir(sourceFiles, 'src/tests/unit');
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:true, browser:false, node:false, jquery:false,
-      predef:['todo', 'test', 'jasmine', 'afterEach', 'beforeEach', 'expect',
-        'describe', 'it', 'xdescribe', 'xit', 'waits', 'waitsFor', 'runs', 'spyOn']
-    })
-  };
-};
-
-var buildSystem = function () {
-  var sourceFiles = ['Jakefile'];
-  collectSourceFilesInDir(sourceFiles, 'src/build');
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:true, browser:false, node:true, jquery:false,
-      predef:['complete', 'desc', 'task', 'file', 'directory', 'jake']
-    })
-  };
-};
-
-var koViewModels = function () {
-  var sourceFiles = [];
-  collectSourceFilesInDir(sourceFiles, 'src/main/knockout');
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:true, browser:true, node:false, jquery:false,
-      predef:['todo', 'ko']
-    })
-  };
-};
-
-var project = {
-  coreLogic:coreLogic(),
-  zeptoJQuery:{
-    viewModels:zeptoJQueryViewModels(),
-    apiFix:zeptoApiFix()
-  },
-  ko:{
-    viewModels:koViewModels()
-  },
-  unitTestSystem:unitTestSystem(),
-  buildSystem:buildSystem(),
-  codeAnalysis:function (errorMsgs) {
-    console.log('Analyzing code of the application core logic.');
-    var coreOk = project.coreLogic.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the Zepto/jQuery view models.');
-    var zeptoOk = project.zeptoJQuery.viewModels.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the Zepto API fix.');
-    var apiFixOk = project.zeptoJQuery.apiFix.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the Knockout view models.');
-    var koOk = project.ko.viewModels.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the unit tests.');
-    var testsOk = project.unitTestSystem.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the build system.');
-    var buildOk = project.buildSystem.codeAnalysis(errorMsgs);
-
-    return coreOk && zeptoOk && apiFixOk && koOk && testsOk && buildOk;
-  }
-};
 
 desc('Runs static code analysis on the sources. It uses JSHint.');
 task('code-analysis', ['require-analyze'], function () {
@@ -253,7 +253,7 @@ task('code-analysis', ['require-analyze'], function () {
 desc('Runs the unit tests of the project');
 task('unit-tests', function () {
   var self = this, testsCompleted = completion(this);
-  executeTestSuite('todo', unitTestSourceFiles(), function (result) {
+  project.executeUnitTests(function (result) {
     self.passed = result;
     testsCompleted();
   });
