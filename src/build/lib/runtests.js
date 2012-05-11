@@ -1,6 +1,6 @@
 var fs = require('fs')
     , vm=require('vm')
-    , jasminens = require('../tests/libs/jasmine-1.1.0/jasmine.js');
+    , jasminens = require('../../tests/libs/jasmine-1.1.0/jasmine.js');
 
 var CustomReporterWithCallback = function (callback, optIndenter) {
   optIndenter = optIndenter || '  ';
