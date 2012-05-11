@@ -57,7 +57,7 @@ var zeptoJQueryViewModels = function () {
       newcap:true, browser:true, node:false, jquery:true,
       predef:['todo']
     }),
-    sources:function() {
+    sources:function () {
       return sourceFiles.slice(0);
     }
   };
@@ -75,7 +75,7 @@ var zeptoApiFix = function () {
       newcap:false, browser:true, node:false, jquery:true,
       predef:['Zepto']
     }),
-    sources:function() {
+    sources:function () {
       return sourceFiles.slice(0);
     }
   };
@@ -137,7 +137,7 @@ var koViewModels = function () {
       newcap:true, browser:true, node:false, jquery:false,
       predef:['todo', 'ko']
     }),
-    sources:function() {
+    sources:function () {
       return sourceFiles.slice(0);
     }
   };
@@ -148,24 +148,24 @@ var project = {
   zeptoJQuery:{
     viewModels:zeptoJQueryViewModels(),
     apiFix:zeptoApiFix(),
-    sources:function() {
+    sources:function () {
       var sources = project.coreLogic.sources();
       Array.prototype.push.apply(sources, this.apiFix.sources());
       Array.prototype.push.apply(sources, this.viewModels.sources());
       return sources;
     },
-    minimize:function(callback) {
+    minimize:function (callback) {
       compactFiles(this.sources(), 'js/todo_with_zepto_jquery.min.js', callback);
     }
   },
   ko:{
     viewModels:koViewModels(),
-    sources:function() {
+    sources:function () {
       var sources = project.coreLogic.sources();
       Array.prototype.push.apply(sources, this.viewModels.sources());
       return sources;
     },
-    minimize:function(callback) {
+    minimize:function (callback) {
       compactFiles(this.sources(), 'js/todo_with_ko.min.js', callback);
     }
   },
@@ -189,9 +189,16 @@ var project = {
   },
   executeUnitTests:function (callback) {
     this.unitTestSystem.execute(this.coreLogic, callback);
+  },
+  clean:function () {
+    fs.readdirSync('js').forEach(function (fileName) {
+      if (fileName.match(/.+\.min\.js$/)) {
+        fs.unlinkSync('js/' + fileName);
+        console.log('File js/' + fileName + ' has been deleted');
+      }
+    });
   }
 };
-
 
 function completion(task) {
   var start = new Date().getTime();
@@ -241,7 +248,6 @@ task('require-analyze', function () {
   });
 }, {async:true});
 
-
 desc('Runs static code analysis on the sources. It uses JSHint.');
 task('code-analysis', ['require-analyze'], function () {
   var start = new Date().getTime();
@@ -266,12 +272,7 @@ directory('js');
 
 desc('Removes all the built files.');
 task('clean', ['js'], function () {
-  fs.readdirSync('js').forEach(function (fileName) {
-    if (fileName.match(/.+\.min\.js$/)) {
-      fs.unlinkSync('js/' + fileName);
-      console.log('File js/' + fileName + ' has been deleted');
-    }
-  });
+  project.clean();
   console.log("Task '" + this.name + "' is completed");
 });
 
