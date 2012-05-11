@@ -64,6 +64,7 @@ To build this project follow these steps:
 5. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
 
 By default the build process will perform unit testing, static code analysis using JSHint and compactation and mimification to build the production ready files.
+The first time you build the project, the packages [jshint](https://github.com/jshint/node-jshint) and [uglify-js](https://github.com/mishoo/UglifyJS) will be installed.
 
 Execute
 =======
@@ -75,7 +76,7 @@ Proyect layout
 
 The project is structured in the following directories:
 
-* ```Jakefile``` The Jake build file of the project
+* ```Jakefile``` The Jake build file of the project. It uses the build package inside this project.
 * ```css/``` Simple CSS for the applications
 * ```img/``` Some images (the ajax loader)
 * ```js/``` The runtime code of the application
@@ -83,10 +84,13 @@ The project is structured in the following directories:
         * ```todo_with_ko.min.js``` Compacted minimified code resulting of the build process (You must build first)
         * ```todo_with_zepto_jquery.min.js``` Compacted minimified code resulting of the build process (You must build first)
 * ```src/``` The source code for the application
-    * ```build/``` Some build utilities used from the build file
-        * ``minimize.js`` Node module that exposes a function to compact and minimize several source files using uglify-js
-        * ``runtests.js`` Node module that exposes a function to run jasmine tests
-        * ``analyze.js`` Node module that wraps JSHint to perform static code analysis
+    * ```build/``` A node package with an API to perform the build process. To be used with any node compatible build system.
+        * ```lib/```
+          * ``minimize.js`` Utilities to compact and minimize several source files using uglify-js
+          * ``runtests.js`` Utilities that exposes a function to run jasmine tests
+          * ``analyze.js`` Utilities to use JSHint to perform static code analysis
+          * ``project.js`` The public API of the build system. It exposes the project structure as an object
+        * ``package.json`` The descriptor of this node package
     * ```main/``` The source code for the runtime
         * ```common/``` The source code of the core of the application, decoupled from the DOM/Presentation framework
 used. The unit tests cover this files, except store.js.
