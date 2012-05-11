@@ -56,7 +56,10 @@ var zeptoJQueryViewModels = function () {
 
       newcap:true, browser:true, node:false, jquery:true,
       predef:['todo']
-    })
+    }),
+    sources:function() {
+      return sourceFiles.slice(0);
+    }
   };
 };
 
@@ -71,7 +74,10 @@ var zeptoApiFix = function () {
 
       newcap:false, browser:true, node:false, jquery:true,
       predef:['Zepto']
-    })
+    }),
+    sources:function() {
+      return sourceFiles.slice(0);
+    }
   };
 };
 
@@ -117,8 +123,10 @@ var buildSystem = function () {
 };
 
 var koViewModels = function () {
-  var sourceFiles = [];
-  collectSourceFilesInDir(sourceFiles, 'src/main/knockout');
+  var sourceFiles = [
+    'src/main/knockout/viewmodels.js',
+    'src/main/knockout/main.js'
+  ];
 
   return {
     codeAnalysis:codeAnalyzer(sourceFiles, {
@@ -128,7 +136,10 @@ var koViewModels = function () {
 
       newcap:true, browser:true, node:false, jquery:false,
       predef:['todo', 'ko']
-    })
+    }),
+    sources:function() {
+      return sourceFiles.slice(0);
+    }
   };
 };
 
@@ -136,10 +147,27 @@ var project = {
   coreLogic:coreLogic(),
   zeptoJQuery:{
     viewModels:zeptoJQueryViewModels(),
-    apiFix:zeptoApiFix()
+    apiFix:zeptoApiFix(),
+    sources:function() {
+      var sources = project.coreLogic.sources();
+      Array.prototype.push.apply(sources, this.apiFix.sources());
+      Array.prototype.push.apply(sources, this.viewModels.sources());
+      return sources;
+    },
+    minimize:function(callback) {
+      compactFiles(this.sources(), 'js/todo_with_zepto_jquery.min.js', callback);
+    }
   },
   ko:{
-    viewModels:koViewModels()
+    viewModels:koViewModels(),
+    sources:function() {
+      var sources = project.coreLogic.sources();
+      Array.prototype.push.apply(sources, this.viewModels.sources());
+      return sources;
+    },
+    minimize:function(callback) {
+      compactFiles(this.sources(), 'js/todo_with_ko.min.js', callback);
+    }
   },
   unitTestSystem:unitTestSystem(),
   buildSystem:buildSystem(),
@@ -164,31 +192,6 @@ var project = {
   }
 };
 
-function zeptoJQuerySourceFiles() {
-  var sources = project.coreLogic.sources();
-  // Must be this order
-  sources.push('src/main/zepto_jquery/zepto-api-fix.js');
-  sources.push('src/main/zepto_jquery/viewmodels.js');
-  sources.push('src/main/zepto_jquery/main.js');
-  return sources;
-}
-
-function koSourceFiles() {
-  var sources = project.coreLogic.sources();
-  // Must be this order
-  sources.push('src/main/knockout/viewmodels.js');
-  sources.push('src/main/knockout/main.js');
-  return sources;
-}
-
-function unitTestSourceFiles() {
-  var sources = project.coreLogic.sources();
-  sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.console_reporter.js');
-  sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
-  collectSourceFilesInDir(sources, 'src/tests/utils');
-  collectSourceFilesInDir(sources, 'src/tests/unit');
-  return sources;
-}
 
 function completion(task) {
   var start = new Date().getTime();
@@ -273,13 +276,13 @@ task('clean', ['js'], function () {
 });
 
 desc('Builds only the Knockout based production files of this project. Will not run neither tests nor code analysis.');
-file('js/todo_with_ko.min.js', ['js', 'require-minimize'].concat(koSourceFiles()), function () {
-  compactFiles(koSourceFiles(), 'js/todo_with_ko.min.js', completion(this));
+file('js/todo_with_ko.min.js', ['js', 'require-minimize'].concat(project.ko.sources()), function () {
+  project.ko.minimize(completion(this));
 }, {async:true});
 
 desc('Builds only the Zepto/jQuery based production files of this project. Will not run neither tests nor code analysis.');
-file('js/todo_with_zepto_jquery.min.js', ['js', 'require-minimize'].concat(zeptoJQuerySourceFiles()), function () {
-  compactFiles(zeptoJQuerySourceFiles(), 'js/todo_with_zepto_jquery.min.js', completion(this));
+file('js/todo_with_zepto_jquery.min.js', ['js', 'require-minimize'].concat(project.zeptoJQuery.sources()), function () {
+  project.zeptoJQuery.minimize(completion(this));
 }, {async:true});
 
 desc('Builds all the production files of this project, but will not perform neither tests nor code analysis.');
