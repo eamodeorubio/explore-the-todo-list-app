@@ -197,6 +197,27 @@ var project = {
         console.log('File js/' + fileName + ' has been deleted');
       }
     });
+  },
+  makeSureModuleIsInstalled:function (module, callback) {
+    function installModule() {
+      var cmd = 'npm install ' + module;
+      console.log("Installing locally the module " + module);
+      console.log(cmd);
+      var child = exec(cmd, function (err) {
+        callback(err);
+      });
+      child.stdout.on('data', console.log.bind(console));
+      child.stderr.on('data', console.error.bind(console));
+    }
+
+    try {
+      if (fs.statSync('node_modules/' + module).isDirectory())
+        callback();
+      else
+        installModule();
+    } catch (err) {
+      installModule();
+    }
   }
 };
 
@@ -208,30 +229,8 @@ function completion(task) {
   };
 }
 
-function installModule(module, callback) {
-  var cmd = 'npm install ' + module;
-  console.log("Installing locally the module " + module);
-  console.log(cmd);
-  var child = exec(cmd, function (err) {
-    callback(err);
-  });
-  child.stdout.on('data', console.log.bind(console));
-  child.stderr.on('data', console.error.bind(console));
-}
-
-function requireModule(module, callback) {
-  try {
-    if (fs.statSync('node_modules/' + module).isDirectory())
-      callback();
-    else
-      installModule(module, callback);
-  } catch (err) {
-    installModule(module, callback);
-  }
-}
-
 task('require-minimize', function () {
-  requireModule('uglify-js', function (err) {
+  project.makeSureModuleIsInstalled('uglify-js', function (err) {
     if (err)
       console.log('Error installing uglify-js: %s', err);
     compactFiles = require('./src/build/minimize');
@@ -240,7 +239,7 @@ task('require-minimize', function () {
 }, {async:true});
 
 task('require-analyze', function () {
-  requireModule('jshint', function (err) {
+  project.makeSureModuleIsInstalled('jshint', function (err) {
     if (err)
       console.log('Error installing jshint: %s', err);
     analyze = require('./src/build/analyze');
