@@ -167,6 +167,16 @@ var koViewModels = (function () {
   };
 }());
 
+function minimize(srcFiles, outputFile, callback) {
+  makeSureModuleIsInstalled('uglify-js', function (err) {
+    if (err)
+      console.log('Error installing uglify-js: %s', err);
+    if (!compactFiles)
+      compactFiles = require('./minimize');
+    compactFiles(srcFiles, outputFile, callback);
+  });
+}
+
 module.exports = {
   coreLogic:coreLogic,
   zeptoJQuery:{
@@ -179,7 +189,7 @@ module.exports = {
       return sources;
     },
     minimize:function (callback) {
-      compactFiles(this.sources(), 'js/todo_with_zepto_jquery.min.js', callback);
+      minimize(this.sources(), 'js/todo_with_zepto_jquery.min.js', callback);
     }
   },
   ko:{
@@ -190,7 +200,7 @@ module.exports = {
       return sources;
     },
     minimize:function (callback) {
-      compactFiles(this.sources(), 'js/todo_with_ko.min.js', callback);
+      minimize(this.sources(), 'js/todo_with_ko.min.js', callback);
     }
   },
   unitTestSystem:unitTestSystem,
@@ -220,14 +230,6 @@ module.exports = {
         fs.unlinkSync('js/' + fileName);
         console.log('File js/' + fileName + ' has been deleted');
       }
-    });
-  },
-  makeSureUglifyJsIsInstalled:function (callback) {
-    makeSureModuleIsInstalled('uglify-js', function (err) {
-      if (err)
-        console.log('Error installing uglify-js: %s', err);
-      compactFiles = require('./minimize');
-      callback();
     });
   },
   makeSureJsHintIsInstalled:function (callback) {

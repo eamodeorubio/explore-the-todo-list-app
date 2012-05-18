@@ -8,10 +8,6 @@ function completion(task) {
   };
 }
 
-task('require-minimize', function () {
-  project.makeSureUglifyJsIsInstalled(complete);
-}, {async:true});
-
 task('require-analyze', function () {
   project.makeSureJsHintIsInstalled(complete);
 }, {async:true});
@@ -45,12 +41,12 @@ task('clean', ['js'], function () {
 });
 
 desc('Builds only the Knockout based production files of this project. Will not run neither tests nor code analysis.');
-file('js/todo_with_ko.min.js', ['js', 'require-minimize'].concat(project.ko.sources()), function () {
+file('js/todo_with_ko.min.js', ['js'].concat(project.ko.sources()), function () {
   project.ko.minimize(completion(this));
 }, {async:true});
 
 desc('Builds only the Zepto/jQuery based production files of this project. Will not run neither tests nor code analysis.');
-file('js/todo_with_zepto_jquery.min.js', ['js', 'require-minimize'].concat(project.zeptoJQuery.sources()), function () {
+file('js/todo_with_zepto_jquery.min.js', ['js'].concat(project.zeptoJQuery.sources()), function () {
   project.zeptoJQuery.minimize(completion(this));
 }, {async:true});
 
