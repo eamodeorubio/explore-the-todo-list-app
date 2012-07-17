@@ -105,8 +105,7 @@ var zeptoApiFix = (function () {
 }());
 
 var unitTestSystem = (function () {
-  var sourceFiles = [];
-  collectSourceFilesInDir(sourceFiles, 'src/tests/utils');
+  var sourceFiles = ['src/tests/utils/test-doubles.js', 'src/tests/utils/custom-matchers.js'];
   collectSourceFilesInDir(sourceFiles, 'src/tests/unit');
 
   return {
@@ -121,7 +120,6 @@ var unitTestSystem = (function () {
     }),
     execute:function (moduleToTest, callback) {
       var sources = moduleToTest.sources();
-      sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.console_reporter.js');
       sources.push('src/tests/libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
       Array.prototype.push.apply(sources, sourceFiles);
       executeTestSuite('todo', sources, callback);
