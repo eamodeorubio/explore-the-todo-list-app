@@ -26,11 +26,13 @@ var todo = (function (ns, undefined) {
       });
       return task;
     };
-    this.forEach = function (callback) {
+    this.forEach = function (callback, optEndCallback) {
       allTasks(function (tasks) {
         var numberOfTasks = tasks.length;
         for (var i = 0; i < numberOfTasks; i++)
-          callback(tasks[i], i === (numberOfTasks - 1));
+          callback(tasks[i]);
+        if (typeof optEndCallback === 'function')
+          optEndCallback();
       });
     };
   };

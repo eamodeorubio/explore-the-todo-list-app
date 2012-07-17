@@ -65,12 +65,39 @@ describe("A Tasks object, initialized with a store and a task factory", function
         expect(userCallback.argsForCall[0][0]).toEqual(foundTasks[0]);
         expect(userCallback.argsForCall[1][0]).toEqual(foundTasks[1]);
       });
-      it("the callback will invoke the user's callback once for each returned task, indicating if each task is the last", function () {
-        expect(userCallback.callCount).toBe(2);
+    });
+  });
 
-        expect(userCallback.argsForCall[0][1]).toBe(false);
-        expect(userCallback.argsForCall[1][1]).toBe(true);
+  describe("has a forEach method, that can receive an optional second callback", function () {
+    var userCallback, endCallback;
+    beforeEach(function () {
+      userCallback = jasmine.createSpy("forEach callback");
+      endCallback = jasmine.createSpy("forEach end callback");
+      tasks.forEach(userCallback, endCallback);
+    });
+    it("if no data, the end callback will be invoked", function () {
+      store.callbackForLastAllCall()([]);
+
+      expect(endCallback).toHaveBeenCalled();
+    });
+    it("if data, the end callback will be invoked after the last task is provided", function () {
+      var foundDTOs = [test.spy('task dto 1'), test.spy('task dto 2')];
+      var calls = [];
+      var foundTasks = [test.doubleFor('task', 'found task 1'), test.doubleFor('task', 'found task 1')];
+      var taskFactoryCallCount = 0;
+      taskFactory.andCallFake(function () {
+        return foundTasks[taskFactoryCallCount++];
       });
+      userCallback.andCallFake(function (dto) {
+        calls.push(dto);
+      });
+      endCallback.andCallFake(function () {
+        calls.push("end");
+      });
+      store.callbackForLastAllCall()(foundDTOs);
+
+      expect(calls.length).toBe(3);
+      expect(calls).toEqual([foundTasks[0], foundTasks[1], "end"]);
     });
   });
 });
