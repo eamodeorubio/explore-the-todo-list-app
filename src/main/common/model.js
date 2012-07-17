@@ -28,7 +28,9 @@ var todo = (function (ns, undefined) {
     };
     this.forEach = function (callback) {
       allTasks(function (tasks) {
-        tasks.forEach(callback);
+        var numberOfTasks = tasks.length;
+        for (var i = 0; i < numberOfTasks; i++)
+          callback(tasks[i], i === (numberOfTasks - 1));
       });
     };
   };
@@ -45,7 +47,7 @@ var todo = (function (ns, undefined) {
       };
     };
     this.done = function (optIsDone) {
-      if(typeof optIsDone === 'boolean' && optIsDone !== done)
+      if (typeof optIsDone === 'boolean' && optIsDone !== done)
         done = !done;
       return done;
     };
