@@ -19,7 +19,10 @@ var todo = (function (ns, undefined) {
   var scheduleCallback = function (callback, param) {
     // Simulate asynchronous processing, perhaps and AJAX request
     setTimeout(function () {
-      callback(param);
+      if (param)
+        callback(param);
+      else
+        callback();
     }, 500);
   };
 
@@ -32,13 +35,15 @@ var todo = (function (ns, undefined) {
       objects.push(marshal(dto));
       scheduleCallback(callback, dto);
     };
-
+    this.removeAll = function (callback) {
+      scheduleCallback(callback);
+    };
     this.all = function (callback) {
       scheduleCallback(callback, objects.map(unmarshal));
     };
     this.save = function (dto, callback) {
       var index = objectsById[dto.id];
-      if(!index)
+      if (!index)
         create(dto, callback);
       else {
         objects[index] = marshal(dto);

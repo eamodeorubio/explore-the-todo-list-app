@@ -1,5 +1,6 @@
+// Keep 'storage' public for integrated testing setup
+var storage = new todo.store.InMemoryStorage();
 $(function () {
-  var storage = new todo.store.InMemoryStorage();
   var domView = new todo.view.$.AppViewModel({
     'tasksList':$('.task-list-widget .task-list .task'),
     'newTaskDescription':$('.add-task-widget .txt'),

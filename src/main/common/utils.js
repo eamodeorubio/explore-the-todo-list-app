@@ -1,3 +1,21 @@
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function")
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+
+    var aArgs = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        FNOP = function () {},
+        FBound = function () {
+          return fToBind.apply(this instanceof FNOP? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+
+    FNOP.prototype = this.prototype;
+    FBound.prototype = new FNOP();
+
+    return FBound;
+  };
+}
 var todo = (function (ns, undefined) {
   ns = ns || {};
   ns.utils = ns.utils || {};
@@ -6,9 +24,9 @@ var todo = (function (ns, undefined) {
     var subscriptors = [];
 
     this.subscribe = function (subscriptor) {
-      if(typeof subscriptor !== 'function')
+      if (typeof subscriptor !== 'function')
         return;
-      if(subscriptors.indexOf(subscriptor) === -1)
+      if (subscriptors.indexOf(subscriptor) === -1)
         subscriptors.push(subscriptor);
     };
     this.publish = function (data) {
@@ -27,10 +45,10 @@ var todo = (function (ns, undefined) {
     var value = initialValue;
     var change = optEvent || new ns.utils.Event();
     var fieldAccessor = function (optNewValue) {
-      if(typeof optNewValue !== 'undefined') {
+      if (typeof optNewValue !== 'undefined') {
         var oldValue = value;
         value = optNewValue;
-        if(optNewValue !== oldValue)
+        if (optNewValue !== oldValue)
           change.publish(value);
         return fieldAccessor;
       }
