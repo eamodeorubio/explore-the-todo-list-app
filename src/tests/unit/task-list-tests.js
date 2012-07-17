@@ -65,6 +65,12 @@ describe("A Tasks object, initialized with a store and a task factory", function
         expect(userCallback.argsForCall[0][0]).toEqual(foundTasks[0]);
         expect(userCallback.argsForCall[1][0]).toEqual(foundTasks[1]);
       });
+      it("the callback will invoke the user's callback once for each returned task, indicating if each task is the last", function () {
+        expect(userCallback.callCount).toBe(2);
+
+        expect(userCallback.argsForCall[0][1]).toBe(false);
+        expect(userCallback.argsForCall[1][1]).toBe(true);
+      });
     });
   });
 });
