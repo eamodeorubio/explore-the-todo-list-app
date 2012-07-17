@@ -21,9 +21,11 @@ var todo = (function (ns, undefined) {
     taskWidgetFactory = taskWidgetFactory || ns.controller.createAndBindWidgetForTask;
 
     // Public
-    this.start = function () {
-      taskList.forEach(function (task) {
+    this.start = function (callback) {
+      taskList.forEach(function (task, isLast) {
         taskWidgetFactory(task, taskListWidget);
+        if (isLast && typeof callback === 'function')
+          callback();
       });
       taskListWidget.onNewTaskRequest(function (description) {
         var task, taskWidget;
