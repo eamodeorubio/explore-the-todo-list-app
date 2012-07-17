@@ -19,8 +19,8 @@ describe("The AppController, initialized with a task list model, a widget, a new
     describe("will call forEach of the task list model, with a callback that when called with a task", function () {
       var task;
       beforeEach(function () {
-        var task = test.doubleFor('task');
-        taskListWidget.callbackForLastForEachCall()(task);
+        task = test.doubleFor('task');
+        taskListModel.callbackForLastForEachCall()(task);
       });
 
       it("will ask taskWidgetFactory to create a new widget for the task", function () {
