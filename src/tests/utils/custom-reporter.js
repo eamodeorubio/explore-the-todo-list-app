@@ -1,4 +1,4 @@
-var CustomReporterWithCallback = function (callback, pp, optIndenter) {
+var CustomReporterWithCallback = function (callback, optIndenter) {
   optIndenter = optIndenter || '  ';
   var indent = 0, start;
 
@@ -11,7 +11,7 @@ var CustomReporterWithCallback = function (callback, pp, optIndenter) {
 
   function printItemResult(itemResult) {
     if (itemResult.passed && !itemResult.passed()) {
-      log("Expected <" + pp(itemResult.expected) + "> " + itemResult.matcherName + " but was <" + pp(itemResult.actual) + ">");
+      log(itemResult.message);
       if (itemResult.trace)
         log(itemResult.trace.stack);
     }

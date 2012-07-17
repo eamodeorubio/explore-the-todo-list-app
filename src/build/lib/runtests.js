@@ -32,5 +32,5 @@ module.exports = function (name, sourceFiles, callback) {
       console.log("No callback supplied");
     };
   }
-  executeTestSuite(name, sourceFiles, new CustomReporterWithCallback(callback, jasminens.jasmine.pp));
+  executeTestSuite(name, sourceFiles, new CustomReporterWithCallback(callback));
 };
