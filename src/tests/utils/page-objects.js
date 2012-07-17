@@ -58,10 +58,8 @@ var test = (function (ns, browser) {
     };
 
     this.emptyTheTaskList = function (callback) {
-      webPage.evaluate(function (callback) {
-        testStorage.removeAll(function () {
-          callback();
-        });
+      webPage.evaluate(function (returnToPhantom) {
+        testStorage.removeAll(returnToPhantom);
       }, returnFromSandboxAndInvokeTheCallback(callback));
     };
 
