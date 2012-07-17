@@ -2,7 +2,24 @@ var test = (function (ns, browser) {
   ns = ns || {};
 
   function MainPage(webPage) {
-    var self = this;
+    var self = this, pendingCallbacks = {};
+
+    function randomId() {
+      return Math.round(Math.random() * 1e20) + "";
+    }
+
+    function returnFromSandboxAndInvokeTheCallback(callback) {
+      var callbackId = randomId();
+      pendingCallbacks[callbackId] = callback;
+      return new Function("callPhantom.call(this, " + callbackId + ", Array.prototype.slice.call(arguments));");
+    }
+
+    webPage.onCallback = function (callbackId, arrayOfArgs) {
+      var callback = pendingCallbacks[callbackId];
+      delete pendingCallbacks[callbackId];
+      if (typeof callback === 'function')
+        callback.apply(this, arrayOfArgs);
+    };
 
     webPage.onError = function (msg, trace) {
       console.log(msg);
@@ -41,31 +58,15 @@ var test = (function (ns, browser) {
     };
 
     this.emptyTheTaskList = function (callback) {
-      webPage.onCallback = function (arrayOfArgs) {
-        callback.apply(this, arrayOfArgs);
-      };
-      webPage.evaluateAsync(function () {
+      webPage.evaluate(function (callback) {
         testStorage.removeAll(function () {
-          if (arguments.length === 0)
-            callPhantom.call(this);
-          else
-            callPhantom.call(this, Array.prototype.slice.call(arguments));
+          callback();
         });
-      });
+      }, returnFromSandboxAndInvokeTheCallback(callback));
     };
 
     this.setupTheTaskList = function (initialTasks, callback) {
-      webPage.onCallback = function (arrayOfArgs) {
-        callback.apply(this, arrayOfArgs);
-      };
-      webPage.evaluate(function (initialTasks) {
-        function returnToPhantom() {
-          if (arguments.length === 0)
-            callPhantom.call(this);
-          else
-            callPhantom.call(this, Array.prototype.slice.call(arguments));
-        }
-
+      webPage.evaluate(function (initialTasks, returnToPhantom) {
         var totalToSave = initialTasks.length, errors = 0;
         initialTasks.forEach(function (task) {
           task.description = task.text;
@@ -78,19 +79,16 @@ var test = (function (ns, browser) {
               returnToPhantom(errors > 0);
           });
         });
-      }, initialTasks);
+      }, initialTasks, returnFromSandboxAndInvokeTheCallback(callback));
     };
 
     this.startApplication = function (callback) {
-      webPage.onCallback = function () {
-        callback.call(this);
-      };
-      webPage.evaluate(function () {
+      webPage.evaluate(function (returnToPhantom) {
         window.startApp();
         setTimeout(function () {
-          callPhantom.call(this);
+          returnToPhantom();
         }, 700);
-      });
+      }, returnFromSandboxAndInvokeTheCallback(callback));
     };
 
     this.displayedTasks = function () {
