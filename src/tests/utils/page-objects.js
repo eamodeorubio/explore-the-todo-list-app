@@ -82,10 +82,7 @@ var test = (function (ns, browser) {
 
     this.startApplication = function (callback) {
       webPage.evaluate(function (returnToPhantom) {
-        window.startApp();
-        setTimeout(function () {
-          returnToPhantom();
-        }, 700);
+        window.startApp(returnToPhantom);
       }, returnFromSandboxAndInvokeTheCallback(callback));
     };
 

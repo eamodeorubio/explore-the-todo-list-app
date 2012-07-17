@@ -8,8 +8,11 @@ describe("The AppController, initialized with a task list model, a widget, a new
   });
 
   describe("has a start method, that when called", function () {
+    var startcallback;
     beforeEach(function () {
-      controller.start();
+      startcallback = jasmine.createSpy('start application callback');
+
+      controller.start(startcallback);
     });
 
     it("will call forEach of the task list model", function () {
@@ -17,14 +20,28 @@ describe("The AppController, initialized with a task list model, a widget, a new
     });
 
     describe("will call forEach of the task list model, with a callback that when called with a task", function () {
-      var task;
+      var task, callback;
       beforeEach(function () {
         task = test.doubleFor('task');
-        taskListModel.callbackForLastForEachCall()(task);
+        callback = taskListModel.callbackForLastForEachCall();
       });
 
       it("will ask taskWidgetFactory to create a new widget for the task", function () {
+        callback(task);
+
         expect(taskWidgetFactory).toHaveBeenCalledWith(task, taskListWidget);
+      });
+
+      it("will not call the start application callback", function () {
+        callback(task);
+
+        expect(startcallback).not.toHaveBeenCalled();
+      });
+
+      it("will call the start application callback only when the last task is retrieved", function () {
+        callback(task, true);
+
+        expect(startcallback).toHaveBeenCalled();
       });
     });
 
