@@ -33,7 +33,7 @@ try {
     if (!isOk)
       console.log("Failed integrated test suite");
     phantom.exit(isOk ? 0 : -1);
-  }));
+  }, jasmine.pp));
   jasmine.getEnv().execute();
 } catch (err) {
   console.log("Unexpected error: ", err);

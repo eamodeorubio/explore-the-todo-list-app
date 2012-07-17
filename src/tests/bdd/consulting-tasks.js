@@ -11,38 +11,72 @@ describe("The todo list apps allows to consult the tasks when the user enters th
     waitsFor(function () {
       return mainPage || error;
     }, "Main page is not responding", 1000);
+  });
 
-    runs(function () {
-      expect(mainPage).toBeDefined();
-      expect(error).toBeNull();
-    });
+  it("the page loads with no errors", function () {
+    expect(mainPage).toBeDefined();
+    expect(error).toBeFalsy();
   });
 
   afterEach(function () {
     if (mainPage && !error)
       mainPage.dispose();
+    mainPage = null;
+    error = null;
   });
 
   describe("Given the task list is empty", function () {
+    var done;
     beforeEach(function () {
-      var empty;
       runs(function () {
         mainPage.emptyTheTaskList(function (err) {
-          empty = !err;
+          done = !err;
         });
       });
 
       waitsFor(function () {
-        return typeof empty !== 'undefined';
-      }, "Could not open main page", 1000);
-
-      runs(function () {
-        expect(empty).toBeTruthy();
-      });
+        return typeof done !== 'undefined';
+      }, "Could not empty the task list", 1000);
     });
 
-    it("the page shows no tasks", function () {
+    it("the page has been setup to empty task list with no errors", function () {
+      expect(done).toBeTruthy();
+    });
+
+    it("when the page starts it shows no tasks", function () {
+      mainPage.startApplication();
+
       expect(mainPage.displayedTasks().length).toBe(0);
+    });
+  });
+
+  describe("Given the task list is not empty", function () {
+    var done, expectedTasks = [
+      {text:'task 1', done:false},
+      {text:'task 2', done:true},
+      {text:'task 3', done:false}
+    ];
+
+    beforeEach(function () {
+      runs(function () {
+        mainPage.setupTheTaskList(expectedTasks, function (err) {
+          done = !err;
+        });
+      });
+
+      waitsFor(function () {
+        return typeof done !== 'undefined';
+      }, "Could not set up the initial task list", 1000);
+    });
+
+    it("the page has been setup to empty task list with no errors", function () {
+      expect(done).toBeTruthy();
+    });
+
+    it("when the page starts it shows the saved tasks", function () {
+      mainPage.startApplication();
+
+      expect(mainPage.displayedTasks()).toEqual(expectedTasks);
     });
   });
 });

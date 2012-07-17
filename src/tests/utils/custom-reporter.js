@@ -1,4 +1,4 @@
-var CustomReporterWithCallback = function (callback, optIndenter) {
+var CustomReporterWithCallback = function (callback, pp, optIndenter) {
   optIndenter = optIndenter || '  ';
   var indent = 0, start;
 
@@ -11,13 +11,16 @@ var CustomReporterWithCallback = function (callback, optIndenter) {
 
   function printItemResult(itemResult) {
     if (itemResult.passed && !itemResult.passed()) {
-      log("Expected <" + itemResult.expected + "> but was <" + itemResult.actual + ">");
-      log(itemResult.trace);
+      log("Expected <" + pp(itemResult.expected) + "> " + itemResult.matcherName + " but was <" + pp(itemResult.actual) + ">");
+      if (itemResult.trace)
+        log(itemResult.trace.stack);
     }
   }
 
   function printSpecResults(spec) {
     var results = spec.results();
+    if (results.passed())
+      return;
     log(spec.description);
     indent++;
     var items = results.getItems();
