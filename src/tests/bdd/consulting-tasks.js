@@ -18,6 +18,11 @@ describe("The todo list apps allows to consult the tasks when the user enters th
     });
   });
 
+  afterEach(function () {
+    if (mainPage && !error)
+      mainPage.dispose();
+  });
+
   describe("Given the task list is empty", function () {
     beforeEach(function () {
       var empty;
