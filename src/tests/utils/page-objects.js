@@ -79,9 +79,15 @@ var test = (function (ns, browser) {
       }, initialTasks);
     };
 
-    this.startApplication = function () {
+    this.startApplication = function (callback) {
+      webPage.onCallback = function () {
+        callback.call(this);
+      };
       webPage.evaluate(function () {
         window.startApp();
+        setTimeout(function () {
+          callPhantom.call(this);
+        }, 700);
       });
     };
 
