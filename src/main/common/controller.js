@@ -22,7 +22,9 @@ var todo = (function (ns, undefined) {
 
     // Public
     this.start = function () {
-      taskList.forEach(taskWidgetFactory);
+      taskList.forEach(function (task) {
+        taskWidgetFactory(task, taskListWidget);
+      });
       taskListWidget.onNewTaskRequest(function (description) {
         var task, taskWidget;
         task = taskList.newTask(description, function () {
