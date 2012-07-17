@@ -12,9 +12,22 @@ describe("The AppController, initialized with a task list model, a widget, a new
       controller.start();
     });
 
-    it("will call retrieve all tasks, passing the taskWidgetFactory as a callback", function () {
-      expect(taskListModel.forEach).toHaveBeenCalledWith(taskWidgetFactory);
+    it("will call forEach of the task list model", function () {
+      expect(taskListModel.forEach).toHaveBeenCalled();
     });
+
+    describe("will call forEach of the task list model, with a callback that when called with a task", function () {
+      var task;
+      beforeEach(function () {
+        var task = test.doubleFor('task');
+        taskListWidget.callbackForLastForEachCall()(task);
+      });
+
+      it("will ask taskWidgetFactory to create a new widget for the task", function () {
+        expect(taskWidgetFactory).toHaveBeenCalledWith(task, taskListWidget);
+      });
+    });
+
     describe("it will register on the event 'NewTaskRequest' of the widget", function () {
       it("a callback", function () {
         expect(taskListWidget.onNewTaskRequest).toHaveBeenCalled();
