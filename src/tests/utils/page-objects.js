@@ -68,6 +68,8 @@ var test = (function (ns, browser) {
 
         var totalToSave = initialTasks.length, errors = 0;
         initialTasks.forEach(function (task) {
+          task.description = task.text;
+          delete task.text;
           testStorage.save(task, function (dto) {
             totalToSave--;
             if (!dto)
