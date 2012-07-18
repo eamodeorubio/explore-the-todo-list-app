@@ -101,6 +101,14 @@ var test = (function (ns, browser) {
       return JSON.parse(json);
     };
 
+    this.requestToggleTaskUsingCheck = function (taskIndex, isDone) {
+      webPage.evaluate(function (taskIndex, isDone) {
+        var check=$('.task-list > .task').eq(taskIndex).find('.chk');
+        check.prop("checked", isDone);
+        check.trigger('change');
+      }, taskIndex, isDone);
+    };
+
     this.fillNewTaskDescription = function (text) {
       webPage.evaluate(function (text) {
         $(".add-task-widget > .txt").val(text).trigger('keyup').trigger('change');

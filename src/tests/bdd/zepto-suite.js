@@ -43,6 +43,13 @@ try {
   }
   console.log("Adding tasks story loaded ok");
 
+  loadOk = phantom.injectJs('doing-tasks.js');
+  if (!loadOk) {
+    console.log('Could not load doing-tasks.js');
+    phantom.exit(-1);
+  }
+  console.log("Doing/Undoing tasks story loaded ok");
+
   /* Very, very nasty trick in order JUnitXmlReporter to work with phantom */
   var fs = require('fs');
   __phantom_writeFile = function (path, data) {
