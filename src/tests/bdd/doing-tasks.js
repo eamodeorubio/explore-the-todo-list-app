@@ -93,12 +93,28 @@ describe("The todo list apps allows to add new tasks", function () {
 
         describeChangingATaskTo(getMainPage, 2, true, getInitialTasks);
       });
+
+      describe("without using the check", function () {
+        beforeEach(function () {
+          mainPage.requestToggleTaskNotUsingCheck(2);
+        });
+
+        describeChangingATaskTo(getMainPage, 2, true, getInitialTasks);
+      });
     });
 
-    describe("When the user request the 2rd task to be undone", function () {
+    describe("When the user request the 2nd task to be undone", function () {
       describe("using the check", function () {
         beforeEach(function () {
           mainPage.requestToggleTaskUsingCheck(1, false);
+        });
+
+        describeChangingATaskTo(getMainPage, 1, false, getInitialTasks);
+      });
+
+      describe("without using the check", function () {
+        beforeEach(function () {
+          mainPage.requestToggleTaskNotUsingCheck(1);
         });
 
         describeChangingATaskTo(getMainPage, 1, false, getInitialTasks);

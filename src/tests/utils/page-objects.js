@@ -103,10 +103,16 @@ var test = (function (ns, browser) {
 
     this.requestToggleTaskUsingCheck = function (taskIndex, isDone) {
       webPage.evaluate(function (taskIndex, isDone) {
-        var check=$('.task-list > .task').eq(taskIndex).find('.chk');
+        var check = $('.task-list > .task').eq(taskIndex).find('.chk');
         check.prop("checked", isDone);
         check.trigger('change');
       }, taskIndex, isDone);
+    };
+
+    this.requestToggleTaskNotUsingCheck = function (taskIndex) {
+      webPage.evaluate(function (taskIndex) {
+        var check = $('.task-list > .task').eq(taskIndex).find('.txt').trigger('click');
+      }, taskIndex);
     };
 
     this.fillNewTaskDescription = function (text) {
