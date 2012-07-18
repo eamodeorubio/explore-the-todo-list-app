@@ -1,11 +1,17 @@
 try {
-  console.log(phantom.libraryPath);
   var loadOk = phantom.injectJs('../libs/jasmine-1.1.0/jasmine.js');
   if (!loadOk) {
     console.log('Could not load Jasmine');
     phantom.exit(-1);
   }
   console.log("Jasmine loaded ok");
+
+  loadOk = phantom.injectJs('../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
+  if (!loadOk) {
+    console.log('Could not load ../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
+    phantom.exit(-1);
+  }
+  console.log("JUnit reporter loaded ok");
 
   loadOk = phantom.injectJs('../utils/custom-reporter.js');
   if (!loadOk) {
@@ -29,6 +35,13 @@ try {
     phantom.exit(-1);
   }
   console.log("Consulting tasks story loaded ok");
+  /* Very, very nasty trick in order JUnitXmlReporter to work with phantom */
+  var fs = require('fs');
+  __phantom_writeFile = function (path, data) {
+    fs.write(path, data, "w");
+  };
+  jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter('todo-BDD-'));
+  /* End JUnitXmlReporter tricky setup */
   jasmine.getEnv().addReporter(new CustomReporterWithCallback(function (isOk) {
     if (!isOk)
       console.log("Failed integrated test suite");

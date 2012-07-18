@@ -1,6 +1,6 @@
 notes.txt
 js/todo*.min.js
-todoTEST*.xml
+todo*TEST*.xml
 node_modules/
 .idea/
 .project
