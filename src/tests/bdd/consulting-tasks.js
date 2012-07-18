@@ -63,9 +63,9 @@ describe("The todo list apps allows to consult the tasks when the user enters th
 
     describe("Given the task list is not empty", function () {
       var done, expectedTasks = [
-        {text:'task 1', done:false},
-        {text:'task 2', done:true},
-        {text:'task 3', done:false}
+        {text:'task 1', done:false, inProgress:false},
+        {text:'task 2', done:true, inProgress:false},
+        {text:'task 3', done:false, inProgress:false}
       ];
 
       beforeEach(function () {

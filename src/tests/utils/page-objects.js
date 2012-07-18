@@ -93,11 +93,25 @@ var test = (function (ns, browser) {
           var el = $(this), task = {};
           task.text = el.find('.txt').first().text();
           task.done = el.find('.chk').first().prop('checked');
+          task.inProgress = el.hasClass('working');
           tasks.push(task);
         });
         return JSON.stringify(tasks);
       });
       return JSON.parse(json);
+    };
+
+    this.fillNewTaskDescription = function (text) {
+      webPage.evaluate(function (text) {
+        $(".add-task-widget > .txt").val(text);
+      }, text);
+    };
+
+    this.requestNewTaskUsingKeyboard = function (text) {
+      webPage.evaluate(function () {
+        var e = $.Event("keyup", {which:13, keyCode:13});
+        $(".add-task-widget > .txt").focus().trigger(e);
+      });
     };
 
     this.hasBeenDefined = function (symbol) {
