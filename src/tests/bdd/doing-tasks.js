@@ -14,12 +14,12 @@ function describeChangingATaskTo(mainPage, taskIndex, isDone, initialTasks) {
     expectedToggledTask.done = isDone;
   });
 
-  it("will see that the new task is being done", function () {
+  it("will see that the new task is being " + (isDone ? 'done' : 'undone'), function () {
     expectedToggledTask.inProgress = true;
     expect(mainPage().displayedTasks()).toEqual(expectedTasks);
   });
 
-  it("will see that the new task is done after a short period of time", function () {
+  it("will see that the new task is " + (isDone ? 'done' : 'undone') + " after a short period of time", function () {
     waitsFor(function () {
       var tasks = mainPage().displayedTasks();
       return tasks.length === expectedTasks.length && tasks[taskIndex].inProgress === false;
@@ -36,12 +36,18 @@ describe("The todo list apps allows to add new tasks", function () {
   describe("Given the application has been started and there are some tasks", function () {
     var mainPage, started, initialTasks;
     beforeEach(function () {
+      // Clean up!
+      if (mainPage && started)
+        mainPage.dispose();
+      mainPage = undefined;
+      started = undefined;
+      initialTasks = [
+        {text:'task 1', done:false, inProgress:false},
+        {text:'task 2', done:true, inProgress:false},
+        {text:'task 3', done:false, inProgress:false}
+      ];
+
       runs(function () {
-        initialTasks = [
-          {text:'task 1', done:false, inProgress:false},
-          {text:'task 2', done:true, inProgress:false},
-          {text:'task 3', done:false, inProgress:false}
-        ];
         test.mainPage(function (err, page) {
           if (err)
             started = false;
@@ -65,12 +71,13 @@ describe("The todo list apps allows to add new tasks", function () {
       }, "Application is not responding", 2000);
     });
 
-    afterEach(function () {
-      if (mainPage && started)
-        mainPage.dispose();
-      mainPage = undefined;
-      started = undefined;
-    });
+    // afterEach is buggy with asynch tests and and asynch beforeEach
+    //afterEach(function () {
+    //  if (mainPage && started)
+    //    mainPage.dispose();
+    //  mainPage = undefined;
+    //  started = undefined;
+    //});
 
     it("the app has started", function () {
       expect(mainPage).toBeDefined();

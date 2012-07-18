@@ -30,6 +30,12 @@ describe("The todo list apps allows to add new tasks", function () {
   describe("Given the application has been started and there are no tasks yet", function () {
     var mainPage, started;
     beforeEach(function () {
+      // Clean up!
+      if (mainPage && started)
+        mainPage.dispose();
+      mainPage = undefined;
+      started = undefined;
+
       runs(function () {
         test.mainPage(function (err, page) {
           if (err)
@@ -54,12 +60,13 @@ describe("The todo list apps allows to add new tasks", function () {
       }, "Application is not responding", 2000);
     });
 
-    afterEach(function () {
-      if (mainPage && started)
-        mainPage.dispose();
-      mainPage = undefined;
-      started = undefined;
-    });
+    // afterEach is buggy with asynch tests and and asynch beforeEach
+    //afterEach(function () {
+    //  if (mainPage && started)
+    //    mainPage.dispose();
+    //  mainPage = undefined;
+    //  started = undefined;
+    //});
 
     it("the app has started", function () {
       expect(mainPage).toBeDefined();

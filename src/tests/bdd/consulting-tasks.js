@@ -1,6 +1,12 @@
 describe("The todo list apps allows to consult the tasks when the user enters the app", function () {
   var mainPage, error;
   beforeEach(function () {
+    // Clean up!!
+    if (mainPage && !error)
+      mainPage.dispose();
+    mainPage = null;
+    error = null;
+
     runs(function () {
       test.mainPage(function (err, page) {
         error = err;
@@ -18,12 +24,13 @@ describe("The todo list apps allows to consult the tasks when the user enters th
     expect(error).toBeFalsy();
   });
 
-  afterEach(function () {
-    if (mainPage && !error)
-      mainPage.dispose();
-    mainPage = null;
-    error = null;
-  });
+  // afterEach is buggy with asynch tests and and asynch beforeEach
+  //afterEach(function () {
+  //  if (mainPage && !error)
+  //    mainPage.dispose();
+  //  mainPage = null;
+  //  error = null;
+  //});
 
   describe("Given the task list is empty", function () {
     var done;
