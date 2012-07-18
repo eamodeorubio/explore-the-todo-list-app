@@ -46,10 +46,11 @@ var test = (function (ns, browser) {
           if (self.hasBeenDefined('$'))
             callback(null, self);
           else {
-            if (webPage.injectJs('js/libs/zepto-1.0rc1/dist/zepto.min.js'))
+            // knockout needs jquery to work properly
+            if (webPage.injectJs('js/libs/jquery-1.7.1.min.js'))
               callback(null, self);
             else
-              callback('Could not load Zepto (needed for testing)');
+              callback('Could not load jQuery (needed for testing)');
           }
         }
       })
@@ -101,7 +102,13 @@ var test = (function (ns, browser) {
 
     this.requestToggleTaskUsingCheck = function (taskIndex) {
       webPage.evaluate(function (taskIndex, isDone) {
-        $('.task-list > .task').eq(taskIndex).find('.chk').trigger('click');
+        var chk = $('.task-list > .task').eq(taskIndex).find('.chk');
+        if ('ko' in window) {
+          // knockout needs to change the checked property before the click in order to notice the event
+          // Don't know why!!!
+          chk.prop('checked', !chk.prop('checked'));
+        }
+        chk.trigger('click');
       }, taskIndex);
     };
 
