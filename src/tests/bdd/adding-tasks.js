@@ -68,6 +68,27 @@ describe("The todo list apps allows to add new tasks", function () {
           })
         });
       });
+      describe("When the user request the task to be added without using the keyboard", function () {
+        beforeEach(function () {
+          mainPage.requestNewTaskWithoutKeyboard();
+        });
+        it("will see that the new task is being created", function () {
+          expectedNewTask.inProgress = true;
+          expect(mainPage.displayedTasks()).toEqual([expectedNewTask]);
+        });
+        it("will see that the new task is created after a short period of time", function () {
+
+          waitsFor(function () {
+            var tasks = mainPage.displayedTasks();
+            return tasks.length === 1 && tasks[0].inProgress === false;
+          }, "Task is not created or operation is too slow", 1000);
+
+          runs(function () {
+            expectedNewTask.inProgress = false;
+            expect(mainPage.displayedTasks()).toEqual([expectedNewTask]);
+          })
+        });
+      });
     });
   });
 });

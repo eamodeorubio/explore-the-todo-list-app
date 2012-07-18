@@ -103,14 +103,20 @@ var test = (function (ns, browser) {
 
     this.fillNewTaskDescription = function (text) {
       webPage.evaluate(function (text) {
-        $(".add-task-widget > .txt").val(text);
+        $(".add-task-widget > .txt").val(text).trigger('keyup').trigger('change');
       }, text);
     };
 
-    this.requestNewTaskUsingKeyboard = function (text) {
+    this.requestNewTaskUsingKeyboard = function () {
       webPage.evaluate(function () {
         var e = $.Event("keyup", {which:13, keyCode:13});
         $(".add-task-widget > .txt").focus().trigger(e);
+      });
+    };
+
+    this.requestNewTaskWithoutKeyboard = function () {
+      webPage.evaluate(function () {
+        $(".add-task-widget > .btn").focus().trigger('click');
       });
     };
 
