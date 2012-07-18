@@ -1,68 +1,50 @@
 try {
-  var loadOk = phantom.injectJs('../libs/jasmine-1.1.0/jasmine.js');
-  if (!loadOk) {
-    console.log('Could not load Jasmine');
-    phantom.exit(-1);
-  }
-  console.log("Jasmine loaded ok");
+  var scripts = [
+    {description:'Jasmine', path:'../libs/jasmine-1.1.0/jasmine.js'},
+    {description:'JUnit reporter for jasmine', path:'../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js'},
+    {description:'Custom reporter for jasmine', path:'../utils/custom-reporter.js'},
+    {description:'Page objects for application', path:'../utils/page-objects.js'},
+    {description:'"User can consult the tasks" story test suite', path:'consulting-tasks.js'},
+    {description:'"User can create new tasks" story test suite', path:'adding-tasks.js'},
+    {description:'"User can do/undo tasks" story test suite', path:'doing-tasks.js'}
+  ];
 
-  loadOk = phantom.injectJs('../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
-  if (!loadOk) {
-    console.log('Could not load ../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js');
-    phantom.exit(-1);
+  function load(script) {
+    var loadOk = phantom.injectJs(script.path);
+    if (!loadOk) {
+      console.log('Could not load ' + script.path);
+      console.log('(ERROR) ' + script.description);
+      phantom.exit(-1);
+    }
+    console.log('(OK) ' + script.description);
   }
-  console.log("JUnit reporter loaded ok");
 
-  loadOk = phantom.injectJs('../utils/custom-reporter.js');
-  if (!loadOk) {
-    console.log('Could not load utils/custom-reporter.js');
-    phantom.exit(-1);
-  }
-  console.log("Custom reporter loaded ok");
+  //Very, very nasty trick in order JUnitXmlReporter to work with phantom
+  function fixJUnitReporter() {
+    var fs = require('fs');
 
-  loadOk = phantom.injectJs('../utils/page-objects.js');
-  if (!loadOk) {
-    console.log('Could not load utils/page-objects.js');
-    phantom.exit(-1);
+    __phantom_writeFile = function (path, data) {
+      fs.write(path, data, "w");
+    };
   }
-  console.log("Page objects loaded ok");
+
+  function setUpAndLaunchJasmine() {
+    fixJUnitReporter();
+    jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter('todo-BDD-'));
+    jasmine.getEnv().addReporter(new CustomReporterWithCallback(function (isOk) {
+      if (!isOk)
+        console.log("Failed integrated test suite");
+      phantom.exit(isOk ? 0 : -1);
+    }));
+    jasmine.getEnv().execute();
+  }
+
+  scripts.forEach(load);
 
   test.mainPageURL = phantom.libraryPath + '/../../../todo_with_zepto_jquery.html';
 
-  loadOk = phantom.injectJs('consulting-tasks.js');
-  if (!loadOk) {
-    console.log('Could not load consulting-tasks.js');
-    phantom.exit(-1);
-  }
-  console.log("Consulting tasks story loaded ok");
+  setUpAndLaunchJasmine();
 
-  loadOk = phantom.injectJs('adding-tasks.js');
-  if (!loadOk) {
-    console.log('Could not load adding-tasks.js');
-    phantom.exit(-1);
-  }
-  console.log("Adding tasks story loaded ok");
-
-  loadOk = phantom.injectJs('doing-tasks.js');
-  if (!loadOk) {
-    console.log('Could not load doing-tasks.js');
-    phantom.exit(-1);
-  }
-  console.log("Doing/Undoing tasks story loaded ok");
-
-  /* Very, very nasty trick in order JUnitXmlReporter to work with phantom */
-  var fs = require('fs');
-  __phantom_writeFile = function (path, data) {
-    fs.write(path, data, "w");
-  };
-  jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter('todo-BDD-'));
-  /* End JUnitXmlReporter tricky setup */
-  jasmine.getEnv().addReporter(new CustomReporterWithCallback(function (isOk) {
-    if (!isOk)
-      console.log("Failed integrated test suite");
-    phantom.exit(isOk ? 0 : -1);
-  }));
-  jasmine.getEnv().execute();
 } catch (err) {
   console.log("Unexpected error: ", err);
   phantom.exit(-1);
