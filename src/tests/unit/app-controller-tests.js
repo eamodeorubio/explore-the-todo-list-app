@@ -15,33 +15,30 @@ describe("The AppController, initialized with a task list model, a widget, a new
       controller.start(startcallback);
     });
 
-    it("will call forEach of the task list model", function () {
-      expect(taskListModel.forEach).toHaveBeenCalled();
-    });
-
-    describe("will call forEach of the task list model, with a callback that when called with a task", function () {
-      var task, callback;
-      beforeEach(function () {
-        task = test.doubleFor('task');
-        callback = taskListModel.callbackForLastForEachCall();
+    describe("will call the forEach method of the model", function () {
+      it("with two callbacks", function () {
+        expect(taskListModel.forEach).toHaveBeenCalled();
+        expect(taskListModel.forEach.argsForCall[0].length).toBe(2);
+        expect(typeof taskListModel.forEach.argsForCall[0][0]).toBe('function');
+        expect(typeof taskListModel.forEach.argsForCall[0][1]).toBe('function');
       });
 
-      it("will ask taskWidgetFactory to create a new widget for the task", function () {
-        callback(task);
+      describe("the first callback that when called with a task", function () {
+        var task, callback;
+        beforeEach(function () {
+          task = test.doubleFor('task');
+          callback = taskListModel.callbackForLastForEachCall();
+        });
 
-        expect(taskWidgetFactory).toHaveBeenCalledWith(task, taskListWidget);
+        it("will ask taskWidgetFactory to create a new widget for the task", function () {
+          callback(task);
+
+          expect(taskWidgetFactory).toHaveBeenCalledWith(task, taskListWidget);
+        });
       });
 
-      it("will not call the start application callback", function () {
-        callback(task);
-
-        expect(startcallback).not.toHaveBeenCalled();
-      });
-
-      it("will call the start application callback only when the last task is retrieved", function () {
-        callback(task, true);
-
-        expect(startcallback).toHaveBeenCalled();
+      it("the second callback is the start application callback", function () {
+        expect(taskListModel.forEach.argsForCall[0][1]).toBe(startcallback);
       });
     });
 
