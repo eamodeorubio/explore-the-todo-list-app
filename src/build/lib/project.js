@@ -86,24 +86,6 @@ var zeptoJQueryViewModels = (function () {
   };
 }());
 
-var zeptoApiFix = (function () {
-  var sourceFiles = ['src/main/zepto_jquery/zepto-api-fix.js'];
-
-  return {
-    codeAnalysis:codeAnalyzer(sourceFiles, {
-      bitwise:true, eqeqeq:true, forin:true, immed:true, strict:false,
-      latedef:true, nonew:true, noarg:true, undef:true,
-      trailing:true, laxcomma:true, validthis:true,
-
-      newcap:false, browser:true, node:false, jquery:true,
-      predef:['Zepto']
-    }),
-    sources:function () {
-      return sourceFiles.slice(0);
-    }
-  };
-}());
-
 var unitTestSystem = (function () {
   var sourceFiles = ['src/tests/utils/test-doubles.js', 'src/tests/utils/custom-matchers.js'];
   collectSourceFilesInDir(sourceFiles, 'src/tests/unit');
@@ -179,10 +161,8 @@ module.exports = {
   coreLogic:coreLogic,
   zeptoJQuery:{
     viewModels:zeptoJQueryViewModels,
-    apiFix:zeptoApiFix,
     sources:function () {
       var sources = coreLogic.sources();
-      Array.prototype.push.apply(sources, this.apiFix.sources());
       Array.prototype.push.apply(sources, this.viewModels.sources());
       return sources;
     },
@@ -209,15 +189,13 @@ module.exports = {
     console.log('Analyzing code of the Zepto/jQuery view models.');
     var zeptoOk = this.zeptoJQuery.viewModels.codeAnalysis(errorMsgs);
     console.log('Analyzing code of the Zepto API fix.');
-    var apiFixOk = this.zeptoJQuery.apiFix.codeAnalysis(errorMsgs);
-    console.log('Analyzing code of the Knockout view models.');
     var koOk = this.ko.viewModels.codeAnalysis(errorMsgs);
     console.log('Analyzing code of the unit tests.');
     var testsOk = this.unitTestSystem.codeAnalysis(errorMsgs);
     console.log('Analyzing code of the build system.');
     var buildOk = this.buildSystem.codeAnalysis(errorMsgs);
 
-    return coreOk && zeptoOk && apiFixOk && koOk && testsOk && buildOk;
+    return coreOk && zeptoOk && koOk && testsOk && buildOk;
   },
   executeUnitTests:function (callback) {
     this.unitTestSystem.execute(this.coreLogic, callback);
