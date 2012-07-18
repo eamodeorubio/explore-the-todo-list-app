@@ -46,7 +46,8 @@ var test = (function (ns, browser) {
           if (self.hasBeenDefined('$'))
             callback(null, self);
           else {
-            // knockout needs jquery to work properly
+            // Use jQuery instead of Zepto for DOM manipulation during tests
+            // There are problems about checking/unchecking the checkboxes
             if (webPage.injectJs('js/libs/jquery-1.7.1.min.js'))
               callback(null, self);
             else
@@ -105,7 +106,6 @@ var test = (function (ns, browser) {
         var chk = $('.task-list > .task').eq(taskIndex).find('.chk');
         if ('ko' in window) {
           // knockout needs to change the checked property before the click in order to notice the event
-          // Don't know why!!!
           chk.prop('checked', !chk.prop('checked'));
         }
         chk.trigger('click');
