@@ -1,4 +1,10 @@
 try {
+  var system = require('system');
+  if (system.args.length !== 2) {
+    console.log("Usage: phantomjs $pathToSuiteScript $pathToHTMLToUseForTests");
+    phantom.exit(-1);
+  }
+
   var scripts = [
     {description:'Jasmine', path:'../libs/jasmine-1.1.0/jasmine.js'},
     {description:'JUnit reporter for jasmine', path:'../libs/larrymyers-jasmine-reporters/src/jasmine.junit_reporter.js'},
@@ -39,9 +45,12 @@ try {
     jasmine.getEnv().execute();
   }
 
+  console.log("Loading scripts...");
   scripts.forEach(load);
+  console.log("Scripts loaded successfully");
 
-  test.mainPageURL = phantom.libraryPath + '/../../../todo_with_zepto_jquery.html';
+  test.mainPageURL = phantom.libraryPath + '/../../../' + system.args[1];
+  console.log("Testing the following HTML: " + system.args[1]);
 
   setUpAndLaunchJasmine();
 

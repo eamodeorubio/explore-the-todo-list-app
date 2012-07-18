@@ -46,12 +46,10 @@ var test = (function (ns, browser) {
           if (self.hasBeenDefined('$'))
             callback(null, self);
           else {
-            webPage.includeJs('js/libs/zepto-0.8/dist/zepto.min.js', function () {
-              if (self.hasBeenDefined('$'))
-                callback('Could not load Zepto (needed for testing)');
-              else
-                callback(null, self);
-            });
+            if (webPage.injectJs('js/libs/zepto-1.0rc1/dist/zepto.min.js'))
+              callback(null, self);
+            else
+              callback('Could not load Zepto (needed for testing)');
           }
         }
       })
