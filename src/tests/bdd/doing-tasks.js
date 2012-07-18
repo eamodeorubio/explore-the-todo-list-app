@@ -14,12 +14,12 @@ function describeChangingATaskTo(mainPage, taskIndex, isDone, initialTasks) {
     expectedToggledTask.done = isDone;
   });
 
-  it("will see that the new task is being created", function () {
+  it("will see that the new task is being done", function () {
     expectedToggledTask.inProgress = true;
     expect(mainPage().displayedTasks()).toEqual(expectedTasks);
   });
 
-  it("will see that the new task is created after a short period of time", function () {
+  it("will see that the new task is done after a short period of time", function () {
     waitsFor(function () {
       var tasks = mainPage().displayedTasks();
       return tasks.length === expectedTasks.length && tasks[taskIndex].inProgress === false;
