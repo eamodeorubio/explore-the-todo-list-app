@@ -99,17 +99,15 @@ var test = (function (ns, browser) {
       return JSON.parse(json);
     };
 
-    this.requestToggleTaskUsingCheck = function (taskIndex, isDone) {
+    this.requestToggleTaskUsingCheck = function (taskIndex) {
       webPage.evaluate(function (taskIndex, isDone) {
-        var check = $('.task-list > .task').eq(taskIndex).find('.chk');
-        check.prop("checked", isDone);
-        check.trigger('change');
-      }, taskIndex, isDone);
+        $('.task-list > .task').eq(taskIndex).find('.chk').trigger('click');
+      }, taskIndex);
     };
 
     this.requestToggleTaskNotUsingCheck = function (taskIndex) {
       webPage.evaluate(function (taskIndex) {
-        var check = $('.task-list > .task').eq(taskIndex).find('.txt').trigger('click');
+        $('.task-list > .task').eq(taskIndex).find('.txt').trigger('click');
       }, taskIndex);
     };
 

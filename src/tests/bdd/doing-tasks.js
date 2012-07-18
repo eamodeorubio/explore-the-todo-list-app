@@ -88,7 +88,7 @@ describe("The todo list apps allows to add new tasks", function () {
     describe("When the user request the 3rd task to be done", function () {
       describe("using the check", function () {
         beforeEach(function () {
-          mainPage.requestToggleTaskUsingCheck(2, true);
+          mainPage.requestToggleTaskUsingCheck(2);
         });
 
         describeChangingATaskTo(getMainPage, 2, true, getInitialTasks);
@@ -106,7 +106,7 @@ describe("The todo list apps allows to add new tasks", function () {
     describe("When the user request the 2nd task to be undone", function () {
       describe("using the check", function () {
         beforeEach(function () {
-          mainPage.requestToggleTaskUsingCheck(1, false);
+          mainPage.requestToggleTaskUsingCheck(1);
         });
 
         describeChangingATaskTo(getMainPage, 1, false, getInitialTasks);
