@@ -22,11 +22,9 @@ var todo = (function (ns, undefined) {
 
     // Public
     this.start = function (callback) {
-      taskList.forEach(function (task, isLast) {
+      taskList.forEach(function (task) {
         taskWidgetFactory(task, taskListWidget);
-        if (isLast && typeof callback === 'function')
-          callback();
-      });
+      }, callback);
       taskListWidget.onNewTaskRequest(function (description) {
         var task, taskWidget;
         task = taskList.newTask(description, function () {
