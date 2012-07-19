@@ -1,30 +1,9 @@
 var compactFiles, analyze
     , executeTestSuite = require('./runtests')
-    , childProcess = require('child_process')
-    , exec = childProcess.exec, spawn = childProcess.spawn
+    , spawn = require('child_process').spawn
+    , minimize = require('./minimize')
+    , analyze = require('./analyze')
     , fs = require('fs');
-
-function makeSureModuleIsInstalled(module, callback) {
-  function installModule() {
-    var cmd = 'npm install ' + module;
-    console.log("Installing locally the module " + module);
-    console.log(cmd);
-    var child = exec(cmd, function (err) {
-      callback(err);
-    });
-    child.stdout.on('data', console.log.bind(console));
-    child.stderr.on('data', console.error.bind(console));
-  }
-
-  try {
-    if (fs.statSync('node_modules/' + module).isDirectory())
-      callback();
-    else
-      installModule();
-  } catch (err) {
-    installModule();
-  }
-}
 
 function collectSourceFilesInDir(sources, dirPath) {
   fs.readdirSync(dirPath).forEach(function (name) {
@@ -146,7 +125,7 @@ var buildSystem = (function () {
       trailing:true, laxcomma:true, validthis:true,
 
       newcap:true, browser:false, node:true, jquery:false,
-      predef:['complete', 'desc', 'task', 'file', 'directory', 'jake']
+      predef:['complete', 'desc', 'task', 'file', 'directory', 'jake', 'fail']
     })
   };
 }());
@@ -172,16 +151,6 @@ var koViewModels = (function () {
     }
   };
 }());
-
-function minimize(srcFiles, outputFile, callback) {
-  makeSureModuleIsInstalled('uglify-js', function (err) {
-    if (err)
-      console.log('Error installing uglify-js: %s', err);
-    if (!compactFiles)
-      compactFiles = require('./minimize');
-    compactFiles(srcFiles, outputFile, callback);
-  });
-}
 
 module.exports = {
   coreLogic:coreLogic,
@@ -245,14 +214,6 @@ module.exports = {
         fs.unlinkSync('js/' + fileName);
         console.log('File js/' + fileName + ' has been deleted');
       }
-    });
-  },
-  makeSureJsHintIsInstalled:function (callback) {
-    makeSureModuleIsInstalled('jshint', function (err) {
-      if (err)
-        console.log('Error installing jshint: %s', err);
-      analyze = require('./analyze');
-      callback();
     });
   }
 };

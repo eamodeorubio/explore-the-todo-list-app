@@ -8,12 +8,8 @@ function completion(task) {
   };
 }
 
-task('require-analyze', function () {
-  project.makeSureJsHintIsInstalled(complete);
-}, {async:true});
-
 desc('Runs static code analysis on the sources. It uses JSHint.');
-task('code-analysis', ['require-analyze'], function () {
+task('code-analysis', function () {
   var start = new Date().getTime();
   this.errorMsgs = [];
   this.passed = project.codeAnalysis(this.errorMsgs);
@@ -54,7 +50,7 @@ desc('Builds all the production files of this project, but will not perform neit
 task('minimize', ['js/todo_with_zepto_jquery.min.js', 'js/todo_with_ko.min.js']);
 
 desc('Perform unit tests and code analysis. Tests are done first, and if they are all ok, then code analysis is run');
-task('qa', ['unit-tests', 'require-analyze'], function () {
+task('qa', ['unit-tests'], function () {
   var start = new Date().getTime();
   if (jake.Task['unit-tests'].passed) {
     var analyzeTask = jake.Task['code-analysis'];
@@ -88,15 +84,19 @@ desc('Runs BDD tests after the build, only if the build is ok');
 task('bdd', ['build'], function () {
   var bddCompleted = completion(this);
   if (jake.Task.qa.passed) {
-    project.executeBDDTests(function(isOk) {
-      if(isOk)
+    project.executeBDDTests(function (isOk) {
+      if (isOk) {
         console.log("BDD OK!");
-      else
-        console.log("BDD FAILED!");
-      bddCompleted();
+        bddCompleted();
+      } else {
+        console.log("BDD OK!");
+        bddCompleted();
+        process.exit(-1);
+      }
     });
   } else {
     console.log('QA FAILED! BDD will not be performed');
     bddCompleted();
+    process.exit(-1);
   }
 }, {async:true});

@@ -1,6 +1,8 @@
 Another todo list application? Why bother...?
 =============================================
 
+[![Build Status](https://secure.travis-ci.org/eamodeorubio/explore-the-todo-list-app.png)](http://travis-ci.org/eamodeorubio/explore-the-todo-list-app)
+
 All the todo list applications I've seen have the purpose of showing the "easy to use" a framework are. In this case
 I simply don't want to proof that a framework is better than other.
 
@@ -53,19 +55,28 @@ illustrate how to apply TDD in a web application based in javascript and HTML5.
 Build
 =====
 
+Standalone build
+----------------
+
 To build this project follow these steps:
 
 1. If not on your system, [install Node.js](http://nodejs.org/#download)
 2. Newer versions of [Node.js](http://nodejs.org/#download) have already installed NPM. But if you have not yet NPM, don't wait and [install NPM](http://npmjs.org/).
 3. If you plan to run the BDD integration tests install [PhantomJS](http://phantomjs.org/download.html)
 4. Download this project to your computer
-5. [Install Jake](https://github.com/mde/jake) if you have not yet installed it.
+5. Install all the packages needed to build this application, it's easy, simply run the command ``npm install`` in the root of the project
 6. Execute the following command ``jake`` from the root folder of this project. To know all the build options issue ``jake -T``
 
 By default the build process will perform only unit testing, static code analysis using JSHint and compactation and mimification to build the production ready files.
 The first time you build the project, the packages [jshint](https://github.com/jshint/node-jshint) and [uglify-js](https://github.com/mishoo/UglifyJS) will be installed.
 
 If you want to perform BDD testing issue either ``jake bdd`` or ``jake clean bdd``. This will trigger a full build, and then execute the BDD tests.
+Another way of executing the full build including BDD is to run the ``npm test`` command.
+
+Travis CI
+---------
+
+This project is now integrated with travis CI. Have a look at the ``.travis.yml`` file and the ``package.json`` file at the root of the project
 
 
 Execute
@@ -78,6 +89,8 @@ Proyect layout
 
 The project is structured in the following directories:
 
+* ```package.json``` The node information used by npm and Travis-CI when you want to build this project with them
+* ```.travis.yml``` The Travis-CI configuration file for this project
 * ```Jakefile``` The Jake build file of the project. It uses the build package inside this project.
 * ```css/``` Simple CSS for the applications
 * ```img/``` Some images (the ajax loader)
@@ -137,7 +150,6 @@ There are a lot of things left to do !
 * An robust storage able to switch to local storage when there is no connectivity and resync with the server when it
 is online again
 * Explore other presentation frameworks (ember.js, jquerymobile...?)
-* Integrate build in a CI server (jenkins...?)
 
 Feel free to experiment
 =======================
