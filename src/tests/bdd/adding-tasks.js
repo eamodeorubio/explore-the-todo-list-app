@@ -22,7 +22,7 @@ function describeAddingANewTask(mainPage, newTaskDescription) {
     runs(function () {
       expectedNewTask.inProgress = false;
       expect(mainPage().displayedTasks()).toEqual([expectedNewTask]);
-    })
+    });
   });
 }
 

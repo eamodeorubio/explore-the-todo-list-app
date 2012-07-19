@@ -83,3 +83,20 @@ task('build', ['qa'], function () {
 
 desc("The default task points to 'build'");
 task('default', ['build']);
+
+desc('Runs BDD tests after the build, only if the build is ok');
+task('bdd', ['build'], function () {
+  var bddCompleted = completion(this);
+  if (jake.Task.qa.passed) {
+    project.executeBDDTests(function(isOk) {
+      if(isOk)
+        console.log("BDD OK!");
+      else
+        console.log("BDD FAILED!");
+      bddCompleted();
+    });
+  } else {
+    console.log('QA FAILED! BDD will not be performed');
+    bddCompleted();
+  }
+}, {async:true});

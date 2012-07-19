@@ -25,7 +25,7 @@ var test = (function (ns, browser) {
       console.log(msg);
       trace.forEach(function (item) {
         console.log('  ', item.file, ':', item.line);
-      })
+      });
     };
 
     webPage.onConsoleMessage = function (msg) {
@@ -54,7 +54,7 @@ var test = (function (ns, browser) {
               callback('Could not load jQuery (needed for testing)');
           }
         }
-      })
+      });
     };
 
     this.emptyTheTaskList = function (callback) {

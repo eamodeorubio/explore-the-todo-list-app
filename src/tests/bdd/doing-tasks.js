@@ -28,7 +28,7 @@ function describeChangingATaskTo(mainPage, taskIndex, isDone, initialTasks) {
     runs(function () {
       expectedToggledTask.inProgress = false;
       expect(mainPage().displayedTasks()).toEqual(expectedTasks);
-    })
+    });
   });
 }
 
