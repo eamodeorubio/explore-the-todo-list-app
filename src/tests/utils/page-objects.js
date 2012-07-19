@@ -102,7 +102,7 @@ var test = (function (ns, browser) {
     };
 
     this.requestToggleTaskUsingCheck = function (taskIndex) {
-      webPage.evaluate(function (taskIndex, isDone) {
+      webPage.evaluate(function (taskIndex) {
         var chk = $('.task-list > .task').eq(taskIndex).find('.chk');
         if ('ko' in window) {
           // knockout needs to change the checked property before the click in order to notice the event
