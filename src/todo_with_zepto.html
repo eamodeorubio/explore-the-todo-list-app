@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TODO list using Zepto</title>
+  <link href="css/explore-the-todo-list-app.min.css" rel="stylesheet"/>
+</head>
+<body>
+<header>
+  <header><h1>Your personal task list</h1></header>
+  <article class="add-task-widget">
+    <input type="text" placeholder="type a new task to do" class="txt">
+    <button class="btn">Add task</button>
+  </article>
+  <article class="task-list-widget">
+    <header><h1>Tasks &raquo;</h1></header>
+    <ul class="task-list">
+      <li class="task todo even">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk">
+        <span class="txt">A pending task (even position)</span>
+      </li>
+      <li class="task todo odd">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk">
+        <span class="txt">Another pending task (odd position)</span>
+      </li>
+      <li class="task done even">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk" checked>
+        <span class="txt">A done task (even position)</span>
+      </li>
+      <li class="task done odd">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk" checked>
+        <span class="txt">Another done task (odd position)</span>
+      </li>
+      <li class="task todo even working">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk">
+        <span class="txt">An in progress pending task (even position)</span>
+      </li>
+      <li class="task todo odd working">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk">
+        <span class="txt">Another in progress pending task (odd position)</span>
+      </li>
+      <li class="task done even working">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk" checked>
+        <span class="txt">An in progress done task (even position)</span>
+      </li>
+      <li class="task done odd working">
+        <img src="img/ajax-loader-dark.gif">
+        <input type="checkbox" class="chk" checked>
+        <span class="txt">Another in progress done task (odd position)</span>
+      </li>
+    </ul>
+  </article>
+  <script src="js/vendor/zepto-1.0.min.js"></script>
+  <script src="js/explore-the-todo-list-app-zepto_jquery.min.js"></script>
+</header>
+</body>
+</html>
