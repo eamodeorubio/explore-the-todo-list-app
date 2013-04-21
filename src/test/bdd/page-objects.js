@@ -9,7 +9,7 @@ bdd.UI = function (tech, $) {
     $('#fr1').load(function () {
       childDOC = this.contentDocument;
       // TODO: fixme -- we should find a proper way of waiting, maybe with an started callack/event?
-      setTimeout(done, 100); // Wait for KO and STORE
+      setTimeout(done, 500); // Wait for KO and STORE
     });
     $('#fr1').attr('src', "/base/dist/todo_with_" + tech + ".html");
   };
