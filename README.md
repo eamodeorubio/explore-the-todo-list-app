@@ -1,7 +1,7 @@
 Another todo list application? Why bother...?
 =============================================
 
-[![Build Status](https://secure.travis-ci.org/eamodeorubio/explore-the-todo-list-app.png?branch=cuke)](http://travis-ci.org/eamodeorubio/explore-the-todo-list-app?branch=cuke)
+[![Build Status](https://travis-ci.org/eamodeorubio/explore-the-todo-list-app.png?branch=cuke)](https://travis-ci.org/eamodeorubio/explore-the-todo-list-app)
 
 All the todo list applications I've seen have the purpose of showing the "easy to use" a framework are. In this case
 I simply don't want to proof that a framework is better than other.
