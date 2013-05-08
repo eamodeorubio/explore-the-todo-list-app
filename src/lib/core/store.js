@@ -27,7 +27,7 @@ var scheduleCallback = function (callback, param) {
       callback(param);
     else
       callback();
-  }, 0);
+  }, 100);
 };
 
 var STORE_ID = 'todo.store';

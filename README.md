@@ -10,9 +10,8 @@ Since I teach TDD/BDD, Javascript and OO, I'd like to show to my students best p
 internet applications, and the todo list application is simple enough to show key concepts. So I think it's a good
 idea publishing a full sample project showing this concepts.
 
-**Of course I'm not perfect, the application can have errors or something could have been done in a better way**. This
- is my second motivation, to learn. I expect to get some feedback to enhance this sample application ! I can lear too
-  new ideas and techniches.
+**Of course I'm not perfect, the application can have errors or something
+could have been done in a better way**. This is my second motivation, to learn. I expect to get some feedback to enhance this sample application ! I can learn too new ideas and techniches.
 
 Finally I'd like to explore some frameworks and how to use them in an efective way.
 
@@ -49,13 +48,22 @@ TDD/BDD
 
 The core of the application code is fully unit tested. Furthermore there exists end to end integration tests for most of the use cases scenarios of the application. I didn't use any fancy BDD framework, but just Jasmine and PhantomJS.
 
-The tests are integrated in a build script and generate JUnit XML report files, so I hope it will be easy to integrate with a CI server in the future.
+The tests are integrated in a [GruntJS](http://gruntjs.com/) build script and generate JUnit XML report
+files, so I hope it will be easy to integrate with others CI servers in the
+future.
 
 If you have never seen TDD in practice in a full rich internet application, I hope this project helps you to
 illustrate how to apply TDD in a web application based in javascript and HTML5.
 
+In this branch (cuke) of the project I'm using CucumberJS and ZombieJS to
+drive the BDD. In the master branch I use Karma, Mocha and jQuery to do
+acceptance test using several real browsers.
+
 Build
 =====
+
+The project build is based on [GruntJS](http://gruntjs.com/) and I'm using
+several plugins for Grunt (have a look at package.json)
 
 Standalone build
 ----------------
@@ -63,14 +71,12 @@ Standalone build
 To build this project follow these steps:
 
 1. If not on your system, [install Node.js](http://nodejs.org/#download). It has already installed NPM.
-2. If you plan to run the BDD integration tests install [PhantomJS]
-(http://phantomjs.org/download.html)
-3 Uninstall old version of grunt `npm uninstall -g grunt`
-4. Install grunt-cli: `npm install -g grunt-cli`
-5. Download this project to your computer
-6. Install all the packages needed to build this application, it's easy,
+2 Uninstall old version of grunt `npm uninstall -g grunt`
+3. Install grunt-cli: `npm install -g grunt-cli`
+4. Download this project to your computer
+5. Install all the packages needed to build this application, it's easy,
 simply run the command ``npm install`` in the root of the project
-7. Execute the following command ``npm test`` from the root folder of this
+6. Execute the following command ``npm test`` from the root folder of this
 project.
 
 Travis CI
@@ -92,7 +98,6 @@ The project is structured in the following directories:
 
 * ```package.json``` The node information used by npm and Travis-CI when you want to build this project with them
 * ```.travis.yml``` The Travis-CI configuration file for this project
-* ```karma.conf.js``` The karma configuration file (for BDD test suite)
 * ```Gruntfile.js``` The grunt configuration file
 * ```dist/``` The output directory
 * ```src/``` The source code for the application
@@ -111,14 +116,13 @@ used. The unit tests cover this files, except store.js.
 .com/Downloading_jQuery)
     * ```tests/``` The source code for the tests
         * ```bdd/``` End to end tests of the application (BDD test suite)
-            * ```vendor/``` Third party libs used for testing (jQuery,
-            jQuery-simulate & jQuery-simulate.key-sequence)
-            * ```main.js``` The entry point for the tdd
-            * ```adding-tasks.js``` The BDD test suite about creating new tasks in the application
-            * ```consulting-tasks.js``` The BDD test suite about consulting the existing tasks in the application
-            * ```doing-tasks.js``` The BDD test suite about marking tasks as done or undone.
-            * ```page-objects.js``` A wrapper around the application's UI
-            using jQuery, jQuery simulate and jQuery simulate key-sequece
+            * ```support/``` Support libs for cucumber steps.
+                * ```world.js``` The cucumber world
+                * ```ui.js``` A page object based on ZombieJS
+                * ```setup.js``` A set up object
+                * ```utils.js```
+            * ```step_defs/``` The cucumber steps
+            * ```features/``` The cucumber features
         * ```unit/``` Unit tests
             * ```test-doubles.js``` A test double (mocks/spies/stubs) library for the application
             * ```*-tests.js``` The unit test suites
@@ -129,6 +133,7 @@ Not yet done (in the roadmap)
 
 There are a lot of things left to do !
 
+* Some refactor of the code
 * Use bower for client-side dependencies
 * Use application cache manifest
 * Edit the description of the task (click to edit)

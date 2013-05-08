@@ -11,7 +11,8 @@
     "test": "grunt build",
     "watch": "grunt",
     "dist": "grunt dist",
-    "unit-test": "grunt dev"
+    "unit-test": "grunt dev",
+    "cucumber": "cucumber-js src/test/bdd/features/ -f pretty -r src/test/bdd/step_defs/"
   },
   "repository": {
     "type": "git",
@@ -30,10 +31,14 @@
     "grunt-contrib-requirejs": "~0.4.0",
     "grunt-contrib-cssmin": "~0.6.0",
     "grunt-simple-mocha": "~0.4.0",
-    "grunt-karma": "~0.4.3",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-cucumber": "~0.2.1",
     "chai": "~1.5.0",
     "sinon": "~1.6.0",
     "sinon-chai": "~2.3.1",
-    "mocha-specxunitcov-reporter": "0.0.3"
+    "mocha-specxunitcov-reporter": "0.0.3",
+    "cucumber": "~0.3.0",
+    "zombie": "~2.0.0-alpha17",
+    "q": "~0.9.3"
   }
 }

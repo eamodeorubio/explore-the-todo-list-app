@@ -11,7 +11,7 @@ module.exports = function (grunt) {
       ZEPTO_JQUERY_SOURCES = SCRIPTS_DIR + '/zepto_jquery/**/*.js',
       UNIT_TESTS_SOURCES = TESTS_DIR + 'unit/**/*.js',
       STYLES_SOURCES = SRC_DIR + 'css/**/*.css',
-      BDD_SOURCES = TESTS_DIR + 'bdd/*.js';
+      BDD_SOURCES = TESTS_DIR + 'bdd/**/*.js';
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -92,24 +92,8 @@ module.exports = function (grunt) {
       },
       bdd: {
         options: {
-          browser: true,
-          jquery: true,
-          expr: true,
-          maxparams: 5,
-          maxdepth: 3,
-          maxstatements: 20,
-          globals: {
-            describe: true,
-            beforeEach: true,
-            afterEach: true,
-            xdescribe: true,
-            context: true,
-            it: true,
-            xit: true,
-            chai: true,
-            bdd: true,
-            console: true
-          }
+          node: true,
+          validthis: true
         },
         files: {
           src: [BDD_SOURCES]
@@ -252,20 +236,19 @@ module.exports = function (grunt) {
         }
       }
     },
-    karma: {
+    connect: {
+      server: {
+        options: {
+          port: 3123,
+          base: OUTPUT_DIR
+        }
+      }
+    },
+    cucumberjs: {
+      files: 'src/test/bdd/features/',
       options: {
-        configFile: 'karma.conf.js',
-        runnerPort: 9999
-      },
-      dev: {
-        singleRun: false,
-        reporters: ['dots'],
-        browsers: ['Chrome']
-      },
-      ci: {
-        singleRun: true,
-        reporters: ['dots', 'junit'],
-        browsers: ['PhantomJS', 'Firefox']
+        format: 'pretty',
+        steps: 'src/test/bdd/step_defs/'
       }
     }
   });
@@ -278,7 +261,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-cucumber');
 
   grunt.registerTask('lint', [
     'csslint',
@@ -301,7 +285,7 @@ module.exports = function (grunt) {
     'lint',
     'simplemocha:ci',
     'dist',
-    'karma:ci'
+    'cucumberjs'
   ]);
 
   grunt.registerTask('default', ['watch']);
