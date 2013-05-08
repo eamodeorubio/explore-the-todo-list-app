@@ -4,13 +4,13 @@ var makeUI = require('./ui'),
     makeSetUp = require('./setup'),
     Q = require('q'),
     Browser = require('zombie'),
-    baseURL = 'http://localhost:3123';
+    baseURL = 'http://localhost:8088';
 
 module.exports = function (done) {
   try {
     var browser = new Browser({ site: baseURL}),
         ui = makeUI(browser),
-        setup = makeSetUp(browser.localStorage('localhost:3123'));
+        setup = makeSetUp(browser.localStorage('localhost:8088'));
 
     this.UI = function () {
       return ui;

@@ -1,7 +1,7 @@
 Another todo list application? Why bother...?
 =============================================
 
-[![Build Status](https://secure.travis-ci.org/eamodeorubio/explore-the-todo-list-app.png)](http://travis-ci.org/eamodeorubio/explore-the-todo-list-app)
+[![Build Status](https://secure.travis-ci.org/eamodeorubio/explore-the-todo-list-app.png?branch=cuke)](http://travis-ci.org/eamodeorubio/explore-the-todo-list-app?branch=cuke)
 
 All the todo list applications I've seen have the purpose of showing the "easy to use" a framework are. In this case
 I simply don't want to proof that a framework is better than other.
@@ -90,6 +90,12 @@ Execute
 After building the project, simply open in your browser either
 ``todo_with_knockout.html`` or ``todo_with_zepto.html`` or ``todo_with_jquery
 .html``. Do this from the `dist/` directory.
+
+If you like you can start a small web server issuing ``grunt
+connect:server:keepalive`` and open a browser to
+``http://localhost:8088/todo_with_jquery.html``,
+``http://localhost:8088/todo_with_zepto.html`` or
+``http://localhost:8088/todo_with_knockout.html``,
 
 Proyect layout
 ==============

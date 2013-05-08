@@ -239,7 +239,7 @@ module.exports = function (grunt) {
     connect: {
       server: {
         options: {
-          port: 3123,
+          port: 8088,
           base: OUTPUT_DIR
         }
       }
@@ -285,6 +285,7 @@ module.exports = function (grunt) {
     'lint',
     'simplemocha:ci',
     'dist',
+    'connect:server',
     'cucumberjs'
   ]);
 
